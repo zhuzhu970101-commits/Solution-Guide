@@ -1,0 +1,6447 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>三、整体结构：三道门理论 · 方案撰写指南 2026</title>
+<style>
+  :root {
+    --orange: #ff5a00;
+    --orange-2: #ff6a00;
+    --orange-3: #ff7337;
+    --ink: #151a24;
+    --nav: #203047;
+    --muted: #667085;
+    --soft: #fff4ec;
+    --line: rgba(255, 106, 0, .17);
+    --shadow: 0 24px 55px rgba(98, 57, 32, .10);
+    --card-shadow: 0 14px 34px rgba(97, 54, 28, .08);
+    --sidebar-w: clamp(282px, 20.8vw, 320px);
+  }
+
+  * { box-sizing: border-box; }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    min-width: 1240px;
+    min-height: 100vh;
+    overflow-x: auto;
+    color: var(--ink);
+    background:
+      radial-gradient(circle at 82% 0%, rgba(255, 147, 92, .24), transparent 34%),
+      linear-gradient(115deg, #fff 0%, #fffaf7 44%, #ffe8db 100%);
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", "Helvetica Neue", Arial, sans-serif;
+  }
+
+  button,
+  a {
+    font: inherit;
+  }
+
+  .app {
+    min-height: 100vh;
+    padding-left: var(--sidebar-w);
+  }
+
+  .sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 20;
+    width: var(--sidebar-w);
+    padding: 30px 18px 24px;
+    display: flex;
+    flex-direction: column;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.98), rgba(255,255,255,.94)),
+      radial-gradient(circle at 55% 8%, rgba(255, 107, 44, .08), transparent 34%);
+    border-right: 1px solid rgba(238, 119, 68, .18);
+    box-shadow: 18px 0 42px rgba(95, 54, 35, .06);
+  }
+
+  .brand {
+    height: 76px;
+    margin: 0 0 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .brand img {
+    width: 216px;
+    max-height: 74px;
+    object-fit: contain;
+    object-position: center;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+
+  .nav-card,
+  .audience-card {
+    border: 1px solid rgba(255, 112, 48, .22);
+    background: rgba(255,255,255,.78);
+    border-radius: 16px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.9);
+    backdrop-filter: blur(18px);
+  }
+
+  .nav-card {
+    flex: 1 1 auto;
+    min-height: 0;
+    padding: 27px 13px 22px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .nav-title {
+    margin: 0 10px 22px;
+    color: var(--orange);
+    font-size: 21px;
+    line-height: 1.18;
+    font-weight: 820;
+  }
+
+  .nav-list {
+    display: grid;
+    gap: 7px;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 0 4px 0 0;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 84, 24, .28) transparent;
+  }
+
+  .nav-list::-webkit-scrollbar { width: 4px; }
+  .nav-list::-webkit-scrollbar-thumb {
+    background: rgba(255, 84, 24, .28);
+    border-radius: 999px;
+  }
+
+  .nav-item {
+    display: grid;
+    grid-template-columns: 24px minmax(0, 1fr);
+    align-items: center;
+    gap: 10px;
+    min-height: 42px;
+    padding: 8px 10px;
+    color: var(--nav);
+    text-decoration: none;
+    border: 0;
+    border-radius: 9px;
+    background: transparent;
+    text-align: left;
+    font-size: 14px;
+    line-height: 1.16;
+    font-weight: 610;
+    cursor: pointer;
+    transition: color .18s ease, background .18s ease, transform .18s ease, box-shadow .18s ease;
+  }
+
+  .nav-item span {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .nav-item svg {
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
+    stroke-width: 1.9;
+    fill: none;
+  }
+
+  .nav-item:hover {
+    color: var(--orange);
+    background: rgba(255, 107, 44, .075);
+    transform: translateX(2px);
+  }
+
+  .nav-item.active {
+    color: #fff;
+    background: linear-gradient(180deg, #ff7524, #ff4a0d);
+    box-shadow: 0 10px 22px rgba(255, 91, 12, .24), inset 0 1px 0 rgba(255,255,255,.32);
+  }
+
+  .audience-card {
+    position: relative;
+    flex: 0 0 140px;
+    margin-top: 16px;
+    padding: 25px 18px;
+  }
+
+  .audience-card h2 {
+    margin: 0 0 12px;
+    color: var(--orange);
+    font-size: 17px;
+    line-height: 1;
+    font-weight: 820;
+  }
+
+  .audience-card p {
+    margin: 0;
+    color: #334155;
+    font-size: 13px;
+    line-height: 1.72;
+    font-weight: 560;
+  }
+
+  .audience-card img {
+    position: absolute;
+    right: 18px;
+    bottom: 22px;
+    width: 54px;
+    height: 48px;
+    object-fit: contain;
+  }
+
+  .page-no {
+    margin-top: 14px;
+    padding-right: 14px;
+    color: var(--orange);
+    text-align: right;
+    font-size: 17px;
+    font-weight: 760;
+  }
+
+  .content {
+    min-height: 100vh;
+    padding: 34px 38px 42px;
+  }
+
+  .page {
+    display: none;
+    scroll-margin-top: 34px;
+  }
+
+  .page.active {
+    display: block;
+  }
+
+  .canvas {
+    position: relative;
+    width: min(100%, 1220px);
+    margin: 0 auto;
+    border-radius: 16px;
+    background:
+      radial-gradient(circle at 78% 22%, rgba(255, 147, 92, .22), transparent 31%),
+      linear-gradient(120deg, #fff 0%, #fffaf7 47%, #ffe8db 100%);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .canvas::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(rgba(255, 151, 100, .18) 1px, transparent 1px),
+      linear-gradient(120deg, rgba(255,255,255,.6), transparent 44%);
+    background-size: 8px 8px, 100% 100%;
+    opacity: .18;
+    pointer-events: none;
+  }
+
+  .home-canvas {
+    min-height: min(calc(100vh - 76px), 1040px);
+    padding: 64px 62px 54px;
+  }
+
+  .home-bg-frame {
+    position: absolute;
+    z-index: 1;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .home-bg-frame::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(90deg, rgba(255,255,255,.48) 0%, rgba(255,255,255,.10) 24%, rgba(255,255,255,.06) 70%, rgba(255,255,255,.18) 100%),
+      linear-gradient(180deg, rgba(255,255,255,.32) 0%, rgba(255,255,255,0) 38%, rgba(255,249,245,.54) 100%);
+  }
+
+  .home-bg-art {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    object-position: 50% 0;
+    transform: none;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+
+  .training-badge {
+    position: relative;
+    z-index: 3;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 38px;
+    padding: 0 24px;
+    color: #fff;
+    background: linear-gradient(180deg, #ff7c23, #ff4b10);
+    border-radius: 999px;
+    box-shadow: 0 12px 25px rgba(255, 83, 15, .25);
+    font-size: 18px;
+    font-weight: 820;
+  }
+
+  .home-title {
+    position: relative;
+    z-index: 3;
+    margin-top: 18px;
+    max-width: none;
+  }
+
+  .home-title h1 {
+    margin: 0;
+    color: #101722;
+    font-size: clamp(62px, 4.7vw, 88px);
+    line-height: .98;
+    font-weight: 900;
+    letter-spacing: 0;
+    white-space: nowrap;
+    text-shadow: 0 10px 18px rgba(17,24,39,.08);
+  }
+
+  .home-title h1 span {
+    color: var(--orange);
+    margin-left: 16px;
+    text-shadow: 0 12px 20px rgba(255, 78, 18, .16);
+  }
+
+  .home-title p {
+    margin: 20px 0 0;
+    color: #182233;
+    font-size: 27px;
+    line-height: 1.25;
+    font-weight: 620;
+  }
+
+  .home-title .keywords {
+    margin-top: 13px;
+    color: #132033;
+    font-size: 19px;
+    font-weight: 680;
+    letter-spacing: .12em;
+  }
+
+  .hero-visual {
+    position: relative;
+    z-index: 1;
+    height: 385px;
+    margin: 4px auto 14px;
+  }
+
+  .home-canvas .hero-book,
+  .home-canvas .ability-card {
+    display: none;
+  }
+
+  .hero-book {
+    position: absolute;
+    left: 50%;
+    top: 46%;
+    width: 610px;
+    max-width: 56%;
+    transform: translate(-50%, -50%);
+    filter: drop-shadow(0 28px 38px rgba(211, 77, 8, .18));
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+
+  .ability-card {
+    position: absolute;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: 54px minmax(0, 1fr);
+    gap: 14px;
+    align-items: center;
+    min-width: 205px;
+    padding: 17px 20px;
+    border: 1px solid rgba(255, 112, 48, .18);
+    border-radius: 16px;
+    background: rgba(255,255,255,.78);
+    box-shadow: 0 18px 32px rgba(131, 70, 31, .10), inset 0 1px 0 rgba(255,255,255,.9);
+    backdrop-filter: blur(14px);
+    transition: transform .18s ease, box-shadow .18s ease;
+  }
+
+  .ability-card:hover,
+  .metric:hover,
+  .value-card:hover,
+  .compare-panel:hover,
+  .question-block:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 22px 45px rgba(116, 65, 36, .12);
+  }
+
+  .ability-card img,
+  .ability-card svg {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+    color: var(--orange);
+    fill: currentColor;
+  }
+
+  .ability-card strong {
+    display: block;
+    color: #261b15;
+    font-size: 19px;
+    line-height: 1.15;
+    font-weight: 820;
+  }
+
+  .ability-card span {
+    display: block;
+    margin-top: 6px;
+    color: #344054;
+    font-size: 14px;
+    line-height: 1.2;
+    font-weight: 560;
+  }
+
+  .ability-client { left: 5%; top: 8%; }
+  .ability-strategy { right: 5%; top: 8%; }
+  .ability-warm { left: 2%; top: 51%; }
+  .ability-ground { right: 3%; top: 51%; }
+  .ability-verify { left: 50%; bottom: 1%; transform: translateX(-50%); }
+  .ability-verify:hover { transform: translate(-50%, -3px); }
+
+  .metrics {
+    position: relative;
+    z-index: 3;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    align-items: center;
+    min-height: 94px;
+    padding: 0 24px;
+    border: 1px solid rgba(255, 123, 52, .20);
+    border-radius: 15px;
+    background: rgba(255,255,255,.78);
+    box-shadow: 0 18px 36px rgba(77,46,30,.08);
+    backdrop-filter: blur(12px);
+  }
+
+  .metric {
+    position: relative;
+    display: grid;
+    grid-template-columns: 40px minmax(0, max-content);
+    gap: 9px;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    padding: 0 10px;
+    color: var(--orange);
+    transition: transform .18s ease, box-shadow .18s ease;
+  }
+
+  .metric:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 18%;
+    bottom: 18%;
+    width: 1px;
+    background: rgba(223,125,81,.26);
+  }
+
+  .metric svg {
+    width: 34px;
+    height: 34px;
+    justify-self: center;
+    fill: currentColor;
+  }
+
+  .metric img {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+    justify-self: center;
+    filter: drop-shadow(0 8px 10px rgba(255, 92, 0, .14));
+  }
+
+  .metric strong {
+    display: block;
+    color: var(--orange);
+    font-size: 28px;
+    line-height: .96;
+    font-weight: 840;
+    white-space: nowrap;
+  }
+
+  .metric small { font-size: .52em; }
+
+  .metric span {
+    display: block;
+    margin-top: 5px;
+    color: #142033;
+    font-size: 12px;
+    line-height: 1.25;
+    font-weight: 640;
+    white-space: nowrap;
+  }
+
+  .home-quote,
+  .quote-card {
+    position: relative;
+    z-index: 2;
+    min-height: 78px;
+    margin-top: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 19px 76px;
+    color: #e94d13;
+    text-align: center;
+    background: rgba(255, 239, 229, .86);
+    border: 1px solid rgba(255, 123, 52, .18);
+    border-radius: 15px;
+    font-size: 20px;
+    line-height: 1.38;
+    font-weight: 820;
+  }
+
+  .home-quote::before,
+  .quote-card::before,
+  .home-quote::after,
+  .quote-card::after {
+    position: absolute;
+    color: rgba(255, 120, 49, .26);
+    font-size: 66px;
+    line-height: 1;
+    font-weight: 900;
+  }
+
+  .home-quote::before,
+  .quote-card::before {
+    content: "“";
+    left: 34px;
+    top: 12px;
+  }
+
+  .home-quote::after,
+  .quote-card::after {
+    content: "”";
+    right: 34px;
+    bottom: -15px;
+  }
+
+  .slide-canvas {
+    min-height: calc(100vh - 76px);
+    padding: 0 0 28px;
+    background: #fff;
+  }
+
+  .banner {
+    position: relative;
+    z-index: 2;
+    min-height: 214px;
+    margin: 0;
+    overflow: hidden;
+    border-radius: 16px 16px 0 0;
+    background:
+      radial-gradient(circle at 84% 82%, rgba(255, 255, 255, .28), transparent 26%),
+      linear-gradient(135deg, #ff4000 0%, #ff6a00 58%, #ff5100 100%);
+  }
+
+  .essence-banner {
+    background-image:
+      linear-gradient(90deg, rgba(255, 73, 0, .98) 0%, rgba(255, 98, 0, .86) 54%, rgba(255, 98, 0, .15) 100%),
+      url("assets/page2-hero-bg.png");
+    background-size: cover, cover;
+    background-position: center, center;
+  }
+
+  .banner::before {
+    content: "";
+    position: absolute;
+    right: 130px;
+    bottom: -70px;
+    width: 360px;
+    height: 190px;
+    border: 1px solid rgba(255,255,255,.22);
+    border-radius: 50%;
+  }
+
+  .banner-copy {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: auto 1px minmax(0, 1fr);
+    gap: 28px;
+    align-items: center;
+    min-height: 214px;
+    padding: 36px 42px;
+    color: #fff;
+  }
+
+  .banner-index {
+    font-size: 84px;
+    line-height: .9;
+    font-weight: 900;
+    text-shadow: 0 8px 24px rgba(88, 31, 0, .16);
+  }
+
+  .banner-divider {
+    width: 1px;
+    height: 94px;
+    background: rgba(255,255,255,.42);
+  }
+
+  .banner h2 {
+    margin: 0;
+    color: #fff;
+    font-size: 52px;
+    line-height: 1.04;
+    font-weight: 900;
+  }
+
+  .banner p {
+    margin: 16px 0 0;
+    color: #ffe6d7;
+    font-size: 21px;
+    line-height: 1.38;
+    font-weight: 650;
+  }
+
+  .banner-asset {
+    position: absolute;
+    z-index: 3;
+    right: 44px;
+    bottom: -20px;
+    width: 286px;
+    max-height: 245px;
+    object-fit: contain;
+    filter: drop-shadow(0 24px 26px rgba(95, 38, 0, .18));
+  }
+
+  .essence-banner .banner-asset {
+    display: none;
+  }
+
+  .section-body {
+    position: relative;
+    z-index: 2;
+    padding: 26px 30px 0;
+  }
+
+  .question-card {
+    position: relative;
+    min-height: 248px;
+    padding: 34px 410px 34px 40px;
+    overflow: hidden;
+    border: 1px solid #fcf0eb;
+    border-radius: 14px;
+    background:
+      radial-gradient(circle at 85% 66%, rgba(255, 118, 44, .12), transparent 25%),
+      #fffaf8;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.92);
+  }
+
+  .question-card h3 {
+    margin: 0 0 24px;
+    color: #4b5563;
+    font-size: 21px;
+    line-height: 1.2;
+    font-weight: 650;
+  }
+
+  .q-line {
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr);
+    gap: 20px;
+    align-items: center;
+    max-width: 570px;
+    min-height: 54px;
+    border-bottom: 1px solid rgba(236, 214, 204, .85);
+  }
+
+  .q-line + .q-line { margin-top: 7px; }
+
+  .q-no {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    color: #fff;
+    background: linear-gradient(180deg, #ff8128, #ff5600);
+    border: 1px solid rgba(255,255,255,.55);
+    box-shadow: 0 10px 20px rgba(255, 90, 0, .18);
+    font-size: 18px;
+    font-weight: 840;
+  }
+
+  .q-text {
+    color: #222;
+    font-size: 23px;
+    line-height: 1.18;
+    font-weight: 820;
+  }
+
+  .question-card .answer {
+    margin: 22px 0 0;
+    color: #4b5563;
+    font-size: 21px;
+    line-height: 1.25;
+    font-weight: 560;
+  }
+
+  .question-visual {
+    position: absolute;
+    right: 28px;
+    top: 18px;
+    width: 350px;
+    height: 218px;
+    object-fit: contain;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+
+  .section-title {
+    margin: 34px 0 18px;
+    color: #20242d;
+    font-size: 28px;
+    line-height: 1.2;
+    font-weight: 900;
+  }
+
+  .section-title span {
+    color: var(--orange);
+  }
+
+  .value-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 22px;
+  }
+
+  .value-card {
+    position: relative;
+    min-height: 200px;
+    padding: 24px 22px 22px;
+    overflow: hidden;
+    border: 1px solid #faeee9;
+    border-radius: 14px;
+    background: #fffdfb;
+    box-shadow: 0 12px 30px rgba(90, 51, 31, .05);
+    transition: transform .18s ease, box-shadow .18s ease;
+  }
+
+  .value-card::after {
+    content: "";
+    position: absolute;
+    right: -18px;
+    top: -26px;
+    width: 90px;
+    height: 110px;
+    border-radius: 0 0 0 90%;
+    background: rgba(255, 122, 63, .055);
+  }
+
+  .value-card img {
+    width: 68px;
+    height: 68px;
+    object-fit: contain;
+  }
+
+  .value-card h3 {
+    margin: 14px 0 13px;
+    color: #2d2f35;
+    font-size: 19px;
+    line-height: 1.34;
+    font-weight: 820;
+  }
+
+  .value-card p {
+    margin: 0;
+    color: #667085;
+    font-size: 15px;
+    line-height: 1.62;
+    font-weight: 560;
+  }
+
+  .quote-card {
+    margin-top: 34px;
+    min-height: 86px;
+    font-size: 22px;
+  }
+
+  .long-canvas {
+    padding-bottom: 34px;
+    background: #fff;
+  }
+
+  .long-canvas .banner {
+    min-height: 206px;
+  }
+
+  .long-canvas .banner-copy {
+    min-height: 206px;
+    padding-right: 330px;
+  }
+
+  .long-canvas .banner h2 {
+    font-size: 45px;
+  }
+
+  .long-canvas .banner p {
+    font-size: 18px;
+    max-width: 720px;
+  }
+
+  .long-canvas .banner-asset {
+    right: 52px;
+    bottom: -10px;
+    width: 235px;
+  }
+
+  .chapter-title {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin: 0 0 20px;
+  }
+
+  .chapter-title .num {
+    color: var(--orange);
+    font-size: 26px;
+    line-height: 1;
+    font-weight: 900;
+  }
+
+  .chapter-title h3 {
+    margin: 0;
+    color: #161a22;
+    font-size: 24px;
+    line-height: 1.2;
+    font-weight: 900;
+  }
+
+  .chapter-title p {
+    margin: 8px 0 0;
+    color: #667085;
+    font-size: 15px;
+    line-height: 1.5;
+    font-weight: 560;
+  }
+
+  .customer-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    overflow: hidden;
+    border: 1px solid #f5e2d9;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 12px 30px rgba(90, 51, 31, .04);
+  }
+
+  .customer-table th,
+  .customer-table td {
+    padding: 16px 18px;
+    border-right: 1px solid #f5e2d9;
+    border-bottom: 1px solid #f5e2d9;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 14px;
+    line-height: 1.42;
+    font-weight: 640;
+  }
+
+  .customer-table th {
+    color: var(--orange);
+    background: #fff1e9;
+    font-weight: 880;
+  }
+
+  .customer-table tr:last-child td { border-bottom: 0; }
+  .customer-table th:last-child,
+  .customer-table td:last-child { border-right: 0; }
+
+  .type-cell {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    text-align: left;
+    color: #161a22;
+    white-space: nowrap;
+  }
+
+  .type-cell img {
+    width: 34px;
+    height: 34px;
+    object-fit: contain;
+  }
+
+  .note-strip {
+    position: relative;
+    display: grid;
+    grid-template-columns: 52px minmax(0, 1fr);
+    gap: 14px;
+    align-items: center;
+    min-height: 74px;
+    margin: 22px 0 30px;
+    padding: 16px 22px;
+    border: 1px solid rgba(255, 112, 48, .20);
+    border-radius: 11px;
+    background: linear-gradient(90deg, #fff8f4, #fff);
+  }
+
+  .note-strip img {
+    width: 42px;
+    height: 42px;
+    object-fit: contain;
+  }
+
+  .note-strip strong {
+    margin-right: 10px;
+    color: var(--orange);
+    font-size: 17px;
+    font-weight: 900;
+  }
+
+  .note-strip span {
+    color: #384152;
+    font-size: 15px;
+    line-height: 1.58;
+    font-weight: 580;
+  }
+
+  .compare-set {
+    position: relative;
+    margin: 18px 0 22px;
+    padding: 22px;
+    border: 1px solid rgba(44, 128, 213, .16);
+    border-radius: 12px;
+    background: linear-gradient(105deg, rgba(239, 247, 255, .92), rgba(255,255,255,.96));
+  }
+
+  .compare-set.green {
+    border-color: rgba(35, 156, 100, .18);
+    background: linear-gradient(105deg, rgba(241, 252, 247, .94), rgba(255,255,255,.97));
+  }
+
+  .compare-label {
+    position: absolute;
+    left: 0;
+    top: 0;
+    transform: translateY(-50%);
+    height: 32px;
+    padding: 0 18px;
+    display: inline-flex;
+    align-items: center;
+    color: #fff;
+    background: linear-gradient(180deg, #3e91df, #1f6ebe);
+    border-radius: 8px 8px 8px 0;
+    font-size: 14px;
+    font-weight: 800;
+  }
+
+  .green .compare-label {
+    background: linear-gradient(180deg, #43b883, #198c58);
+  }
+
+  .compare-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 72px minmax(0, 1fr);
+    gap: 18px;
+    align-items: center;
+  }
+
+  .compare-panel {
+    display: grid;
+    grid-template-columns: 170px minmax(0, 1fr);
+    gap: 20px;
+    align-items: center;
+    min-height: 164px;
+    padding: 18px;
+    border: 1px solid rgba(255,255,255,.9);
+    border-radius: 12px;
+    background: rgba(255,255,255,.82);
+    box-shadow: 0 12px 28px rgba(59, 93, 132, .08);
+    transition: transform .18s ease, box-shadow .18s ease;
+  }
+
+  .compare-panel.reverse {
+    grid-template-columns: minmax(0, 1fr) 170px;
+  }
+
+  .compare-panel img {
+    width: 170px;
+    height: 122px;
+    object-fit: cover;
+    border-radius: 10px;
+    box-shadow: 0 12px 24px rgba(31, 54, 85, .12);
+  }
+
+  .compare-panel h4 {
+    margin: 0 0 8px;
+    color: #1f6ebe;
+    font-size: 17px;
+    line-height: 1.2;
+    font-weight: 880;
+  }
+
+  .green .compare-panel h4 { color: #198c58; }
+
+  .compare-panel p {
+    margin: 0 0 10px;
+    color: #4b5563;
+    font-size: 14px;
+    line-height: 1.55;
+    font-weight: 570;
+  }
+
+  .compare-panel b {
+    display: block;
+    margin-bottom: 6px;
+    color: #1f6ebe;
+    font-size: 14px;
+  }
+
+  .green .compare-panel b { color: #198c58; }
+
+  .compare-panel ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    color: #344054;
+    font-size: 13px;
+    line-height: 1.7;
+    font-weight: 600;
+  }
+
+  .compare-panel li::before {
+    content: "✓";
+    margin-right: 7px;
+    color: #1f6ebe;
+    font-weight: 900;
+  }
+
+  .green .compare-panel li::before { color: #198c58; }
+
+  .vs {
+    display: grid;
+    place-items: center;
+    width: 62px;
+    height: 62px;
+    margin: 0 auto;
+    color: #2373ca;
+    border: 1px solid rgba(35, 115, 202, .18);
+    border-radius: 50%;
+    background: rgba(255,255,255,.82);
+    box-shadow: 0 12px 28px rgba(52, 101, 148, .11);
+    font-size: 22px;
+    font-weight: 900;
+  }
+
+  .green .vs {
+    color: #198c58;
+    border-color: rgba(25, 140, 88, .18);
+  }
+
+  .conclusion-strip {
+    min-height: 92px;
+    margin: 26px 0 30px;
+    padding: 18px 26px;
+    border: 1px solid rgba(255, 112, 48, .20);
+    border-radius: 12px;
+    background: linear-gradient(90deg, #fff7f2, #fff);
+    display: grid;
+    grid-template-columns: 54px minmax(0, 1fr);
+    gap: 18px;
+    align-items: center;
+  }
+
+  .conclusion-strip img {
+    width: 46px;
+    height: 46px;
+    object-fit: contain;
+  }
+
+  .conclusion-strip strong {
+    margin-right: 12px;
+    color: var(--orange);
+    font-size: 18px;
+    font-weight: 900;
+  }
+
+  .conclusion-strip span {
+    color: #2f3745;
+    font-size: 16px;
+    line-height: 1.6;
+    font-weight: 640;
+  }
+
+  .question-stack {
+    display: grid;
+    gap: 18px;
+  }
+
+  .question-block {
+    position: relative;
+    min-height: 148px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 106, 0, .18);
+    border-radius: 12px;
+    background: #fffdfb;
+    transition: transform .18s ease, box-shadow .18s ease;
+  }
+
+  .question-block.blue {
+    border-color: rgba(36, 117, 214, .18);
+    background: linear-gradient(180deg, #f8fbff, #fff);
+  }
+
+  .question-block.green {
+    border-color: rgba(32, 155, 94, .18);
+    background: linear-gradient(180deg, #f8fffb, #fff);
+  }
+
+  .question-block-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 54px;
+    padding: 0 20px;
+    background: linear-gradient(90deg, #fff0e8, #fff);
+    color: var(--orange);
+    font-size: 17px;
+    font-weight: 900;
+  }
+
+  .blue .question-block-head {
+    color: #1f6ebe;
+    background: linear-gradient(90deg, #eaf4ff, #fff);
+  }
+
+  .green .question-block-head {
+    color: #198c58;
+    background: linear-gradient(90deg, #ecfbf3, #fff);
+  }
+
+  .round-no {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    color: #fff;
+    border-radius: 50%;
+    background: linear-gradient(180deg, #ff842d, #ff5600);
+    box-shadow: 0 8px 18px rgba(255, 90, 0, .2);
+  }
+
+  .blue .round-no { background: linear-gradient(180deg, #4297e8, #1c6ac5); }
+  .green .round-no { background: linear-gradient(180deg, #46bf84, #198c58); }
+
+  .question-cols {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+    padding: 20px 24px 24px;
+  }
+
+  .blue .question-cols {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .green .question-cols {
+    grid-template-columns: 1.1fr repeat(4, minmax(0, .9fr));
+  }
+
+  .q-col h5 {
+    margin: 0 0 8px;
+    color: var(--orange);
+    font-size: 14px;
+    line-height: 1.25;
+    font-weight: 900;
+  }
+
+  .blue .q-col h5 { color: #1f6ebe; }
+  .green .q-col h5 { color: #198c58; }
+
+  .q-col p,
+  .q-col li {
+    color: #344054;
+    font-size: 13px;
+    line-height: 1.62;
+    font-weight: 580;
+  }
+
+  .q-col p {
+    margin: 0;
+  }
+
+  .q-col ul {
+    margin: 0;
+    padding-left: 15px;
+  }
+
+  .block-icon {
+    position: absolute;
+    right: 22px;
+    top: 15px;
+    width: 70px;
+    height: 70px;
+    object-fit: contain;
+    opacity: .94;
+  }
+
+  .structure-canvas {
+    padding-bottom: 34px;
+    background: #fff;
+  }
+
+  .structure-banner {
+    min-height: 146px;
+    border-radius: 16px 16px 0 0;
+    background:
+      radial-gradient(circle at 94% 20%, rgba(255,255,255,.24), transparent 22%),
+      linear-gradient(104deg, #ff4000 0%, #ff5a00 58%, #ff7530 100%);
+  }
+
+  .structure-banner .banner-copy {
+    min-height: 146px;
+    padding: 25px 34px;
+    grid-template-columns: auto minmax(0, 1fr) 230px;
+    gap: 22px;
+  }
+
+  .structure-banner .banner-index {
+    font-size: 66px;
+    letter-spacing: 0;
+  }
+
+  .structure-banner h2 {
+    font-size: 34px;
+    line-height: 1.12;
+  }
+
+  .structure-banner p {
+    margin-top: 8px;
+    font-size: 15px;
+  }
+
+  .door-visual {
+    position: relative;
+    height: 108px;
+    align-self: center;
+  }
+
+  .door-visual img {
+    width: 220px;
+    height: 118px;
+    object-fit: contain;
+    filter: drop-shadow(0 18px 24px rgba(77, 29, 6, .18));
+  }
+
+  .structure-body {
+    padding: 24px 28px 0;
+  }
+
+  .door-flow {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 34px;
+    position: relative;
+  }
+
+  .door-card {
+    position: relative;
+    min-height: 178px;
+    padding: 24px 22px;
+    display: grid;
+    grid-template-columns: 72px minmax(0, 1fr);
+    gap: 18px;
+    align-items: center;
+    border: 1px solid #f5e5dd;
+    border-radius: 12px;
+    background: linear-gradient(180deg, #fffdfb, #fff8f4);
+    box-shadow: 0 14px 30px rgba(88, 49, 25, .05);
+  }
+
+  .door-card.blue {
+    border-color: rgba(44, 118, 218, .15);
+    background: linear-gradient(180deg, #fbfdff, #f7fbff);
+  }
+
+  .door-card:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    right: -29px;
+    top: 50%;
+    transform: translateY(-50%);
+    border-left: 20px solid rgba(255, 132, 62, .36);
+    border-top: 18px solid transparent;
+    border-bottom: 18px solid transparent;
+  }
+
+  .door-icon {
+    display: grid;
+    place-items: center;
+    width: 72px;
+    height: 72px;
+    border-radius: 18px;
+    color: var(--orange);
+    background: #fff2ea;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.9), 0 12px 22px rgba(255, 90, 0, .12);
+  }
+
+  .door-card.blue .door-icon {
+    color: #1f6ebe;
+    background: #eaf4ff;
+  }
+
+  .door-icon img,
+  .section-icon {
+    width: 58px;
+    height: 58px;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 16px rgba(255, 90, 0, .14));
+  }
+
+  .door-card small {
+    display: block;
+    color: var(--orange);
+    font-size: 14px;
+    line-height: 1.2;
+    font-weight: 820;
+  }
+
+  .door-card.blue small { color: #1f6ebe; }
+
+  .door-card h3 {
+    margin: 8px 0 10px;
+    color: var(--orange);
+    font-size: 28px;
+    line-height: 1.05;
+    font-weight: 900;
+  }
+
+  .door-card.blue h3 { color: #1f6ebe; }
+
+  .door-card p {
+    margin: 0;
+    color: #243044;
+    font-size: 14px;
+    line-height: 1.55;
+    font-weight: 620;
+  }
+
+  .alert-strip {
+    margin: 20px 0 24px;
+    padding: 16px 22px;
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr);
+    gap: 14px;
+    align-items: center;
+    border: 1px solid rgba(255, 106, 0, .20);
+    border-radius: 10px;
+    background: linear-gradient(90deg, #fff7f2, #fff);
+    color: #263244;
+  }
+
+  .alert-strip svg {
+    width: 36px;
+    height: 36px;
+    color: var(--orange);
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+  }
+
+  .alert-strip strong {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--orange);
+    font-size: 16px;
+    line-height: 1.2;
+    font-weight: 900;
+  }
+
+  .alert-strip span {
+    color: #384152;
+    font-size: 14px;
+    line-height: 1.5;
+    font-weight: 560;
+  }
+
+  .rhythm-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    overflow: hidden;
+    border: 1px solid #f4dfd4;
+    border-radius: 10px;
+    background: #fff;
+  }
+
+  .rhythm-table th,
+  .rhythm-table td {
+    padding: 12px 16px;
+    border-right: 1px solid #f4dfd4;
+    border-bottom: 1px solid #f4dfd4;
+    color: #344054;
+    font-size: 14px;
+    line-height: 1.45;
+    font-weight: 590;
+    vertical-align: middle;
+  }
+
+  .rhythm-table th {
+    color: #fff;
+    background: linear-gradient(180deg, #ff6b13, #ff4a00);
+    text-align: center;
+    font-weight: 850;
+  }
+
+  .rhythm-table tr:last-child td { border-bottom: 0; }
+  .rhythm-table th:last-child,
+  .rhythm-table td:last-child { border-right: 0; }
+
+  .rhythm-table td:first-child {
+    color: #172033;
+    font-weight: 820;
+  }
+
+  .chapter-cell {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+
+  .chapter-cell img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+  }
+
+  .type-focus-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .focus-card {
+    min-height: 205px;
+    padding: 18px 16px;
+    border: 1px solid #edf0f4;
+    border-radius: 12px;
+    background: linear-gradient(180deg, #fff, #fbfcff);
+    box-shadow: 0 10px 24px rgba(50, 65, 85, .04);
+  }
+
+  .focus-card h4 {
+    margin: 0 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #1f6ebe;
+    font-size: 18px;
+    line-height: 1.2;
+    font-weight: 900;
+  }
+
+  .focus-card:nth-child(3) h4,
+  .focus-card:nth-child(1) h4 { color: var(--orange); }
+  .focus-card:nth-child(4) h4 { color: #1f9d63; }
+  .focus-card:nth-child(5) h4 { color: #7b54d6; }
+
+  .focus-card h4 img {
+    width: 44px;
+    height: 44px;
+    object-fit: contain;
+    flex: 0 0 auto;
+  }
+
+  .focus-card p {
+    margin: 0 0 12px;
+    color: #243044;
+    font-size: 14px;
+    line-height: 1.55;
+    font-weight: 630;
+  }
+
+  .focus-card ul,
+  .service-card ul,
+  .diff-panel ul {
+    margin: 0;
+    padding-left: 16px;
+    color: #344054;
+    font-size: 13px;
+    line-height: 1.62;
+    font-weight: 560;
+  }
+
+  .kano-block {
+    display: grid;
+    grid-template-columns: 240px minmax(0, 1fr);
+    gap: 22px;
+    align-items: center;
+    padding: 18px;
+    border: 1px solid #f4e4dc;
+    border-radius: 12px;
+    background: #fffdfb;
+  }
+
+  .pyramid {
+    display: grid;
+    gap: 7px;
+    justify-items: center;
+  }
+
+  .pyramid-level {
+    height: 74px;
+    display: grid;
+    place-items: center;
+    color: #fff;
+    clip-path: polygon(20% 0, 80% 0, 100% 100%, 0 100%);
+    font-size: 34px;
+    font-weight: 900;
+    box-shadow: 0 12px 24px rgba(45, 60, 82, .12);
+  }
+
+  .pyramid-level img {
+    width: 38px;
+    height: 38px;
+    object-fit: contain;
+  }
+
+  .pyramid-level:nth-child(1) { width: 96px; background: linear-gradient(180deg, #ff7a1c, #ff4c00); }
+  .pyramid-level:nth-child(2) { width: 160px; background: linear-gradient(180deg, #55bf82, #27965e); }
+  .pyramid-level:nth-child(3) { width: 230px; background: linear-gradient(180deg, #508dea, #2666d6); }
+
+  .kano-lines {
+    display: grid;
+    gap: 10px;
+  }
+
+  .kano-line {
+    display: grid;
+    grid-template-columns: 270px minmax(0, 1fr) 215px;
+    gap: 14px;
+    align-items: center;
+    min-height: 78px;
+    padding: 12px 16px;
+    border: 1px solid #f1e3dc;
+    border-radius: 10px;
+    background: #fff;
+  }
+
+  .kano-line h4 {
+    margin: 0 0 5px;
+    color: var(--orange);
+    font-size: 16px;
+    line-height: 1.2;
+    font-weight: 900;
+  }
+
+  .kano-line:nth-child(2) h4 { color: #27965e; }
+  .kano-line:nth-child(3) h4 { color: #2666d6; }
+
+  .kano-line p,
+  .kano-line span {
+    margin: 0;
+    color: #384152;
+    font-size: 13px;
+    line-height: 1.5;
+    font-weight: 560;
+  }
+
+  .principle-strip {
+    margin-top: 16px;
+    padding: 15px 18px;
+    border: 1px solid rgba(255, 106, 0, .18);
+    border-radius: 10px;
+    background: #fff7f2;
+    color: var(--orange);
+    text-align: center;
+    font-size: 16px;
+    line-height: 1.45;
+    font-weight: 880;
+  }
+
+  .safety-block,
+  .diff-block {
+    margin-top: 24px;
+    padding: 22px 24px;
+    border: 1px solid #f4e4dc;
+    border-radius: 13px;
+    background: #fffdfb;
+    box-shadow: 0 12px 30px rgba(88, 49, 25, .04);
+  }
+
+  .safety-head {
+    display: grid;
+    grid-template-columns: 52px minmax(0, 1fr);
+    gap: 14px;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  .safety-head img {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 16px rgba(255, 90, 0, .14));
+  }
+
+  .safety-head h3,
+  .diff-block h3 {
+    margin: 0 0 6px;
+    color: var(--orange);
+    font-size: 22px;
+    line-height: 1.2;
+    font-weight: 900;
+  }
+
+  .safety-head p,
+  .diff-block > p {
+    margin: 0;
+    color: #384152;
+    font-size: 14px;
+    line-height: 1.58;
+    font-weight: 560;
+  }
+
+  .safety-grid,
+  .service-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 14px;
+  }
+
+  .safety-item,
+  .service-card,
+  .diff-panel {
+    padding: 16px;
+    border: 1px solid #f1e3dc;
+    border-radius: 10px;
+    background: #fff;
+  }
+
+  .safety-item img,
+  .service-card img {
+    width: 44px;
+    height: 44px;
+    object-fit: contain;
+    filter: drop-shadow(0 8px 13px rgba(255, 90, 0, .12));
+  }
+
+  .safety-item h4,
+  .service-card h4,
+  .diff-panel h4 {
+    margin: 9px 0 7px;
+    color: #1d2738;
+    font-size: 15px;
+    line-height: 1.3;
+    font-weight: 880;
+  }
+
+  .safety-item p {
+    margin: 0;
+    color: #4b5563;
+    font-size: 13px;
+    line-height: 1.52;
+    font-weight: 560;
+  }
+
+  .diff-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 14px;
+    margin-top: 16px;
+  }
+
+  .diff-panel:nth-child(1) {
+    background: linear-gradient(180deg, #f8fff9, #fff);
+    border-color: rgba(42, 157, 100, .18);
+  }
+
+  .diff-panel:nth-child(2) {
+    background: linear-gradient(180deg, #f7fbff, #fff);
+    border-color: rgba(44, 118, 218, .18);
+  }
+
+  .diff-panel:nth-child(3) {
+    background: linear-gradient(180deg, #fff8f2, #fff);
+    border-color: rgba(255, 106, 0, .18);
+  }
+
+  .diff-panel .tag {
+    display: inline-flex;
+    align-items: center;
+    height: 26px;
+    padding: 0 10px;
+    color: #fff;
+    background: #2a9d64;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 820;
+  }
+
+  .diff-panel:nth-child(2) .tag { background: #2f78d4; }
+  .diff-panel:nth-child(3) .tag { background: var(--orange); }
+
+  .service-card:nth-child(1) img,
+  .service-card:nth-child(1) h4 { color: #3a9b6d; }
+  .service-card:nth-child(2) img,
+  .service-card:nth-child(2) h4 { color: #6c63c7; }
+  .service-card:nth-child(3) img,
+  .service-card:nth-child(3) h4 { color: var(--orange); }
+  .service-card:nth-child(4) img,
+  .service-card:nth-child(4) h4 { color: #2f78d4; }
+
+  .language-canvas {
+    width: min(100%, 1220px);
+    min-height: calc(100vh - 76px);
+    padding-bottom: 34px;
+    overflow: visible;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 20px 48px rgba(112, 63, 32, .08);
+  }
+
+  .language-canvas::before { display: block; }
+
+  .language-banner {
+    position: relative;
+    min-height: 206px;
+    overflow: hidden;
+    border-radius: 16px 16px 0 0;
+    background: var(--orange) url("design_handoff_page05/backgrounds/background-header-orange.png") center / cover no-repeat;
+    box-shadow: 0 14px 28px rgba(255, 83, 0, .14);
+  }
+
+  .language-banner-copy {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: 148px 1px minmax(0, 1fr);
+    align-items: center;
+    gap: 28px;
+    min-height: 206px;
+    padding: 36px 360px 34px 42px;
+    color: #fff;
+  }
+
+  .language-banner-index {
+    font-size: 96px;
+    line-height: .88;
+    font-weight: 900;
+    text-shadow: 0 10px 24px rgba(98, 32, 0, .16);
+  }
+
+  .language-banner-divider {
+    height: 96px;
+    background: rgba(255,255,255,.36);
+  }
+
+  .language-banner h2 {
+    margin: 0;
+    color: #fff;
+    font-size: 52px;
+    line-height: 1.05;
+    font-weight: 900;
+  }
+
+  .language-banner p {
+    margin: 16px 0 0;
+    color: #fff7ef;
+    font-size: 18px;
+    line-height: 1.45;
+    font-weight: 720;
+  }
+
+  .language-hero-art {
+    position: absolute;
+    right: 56px;
+    bottom: -8px;
+    z-index: 1;
+    width: 300px;
+    height: auto;
+    filter: drop-shadow(0 18px 22px rgba(116, 38, 0, .18));
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+
+  .language-body {
+    position: relative;
+    z-index: 2;
+    padding: 26px 30px 0;
+  }
+
+  .language-section {
+    margin-top: 26px;
+  }
+
+  .language-section:first-child { margin-top: 0; }
+
+  .language-title {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin: 0 0 10px;
+  }
+
+  .language-title .num {
+    color: var(--orange);
+    font-size: 26px;
+    line-height: 1;
+    font-weight: 900;
+  }
+
+  .language-title h3 {
+    margin: 0;
+    color: #151a24;
+    font-size: 24px;
+    line-height: 1.18;
+    font-weight: 900;
+  }
+
+  .language-lead {
+    margin: 0 0 16px;
+    color: #202a3b;
+    font-size: 15px;
+    line-height: 1.45;
+    font-weight: 670;
+  }
+
+  .feeling-compare {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 48px minmax(0, 1fr);
+    gap: 14px;
+    align-items: center;
+  }
+
+  .writing-panel {
+    overflow: hidden;
+    border: 1px solid #f4dacd;
+    border-radius: 12px;
+    background: #fff;
+  }
+
+  .writing-panel h4 {
+    margin: 0;
+    padding: 16px 18px 15px;
+    border-bottom: 1px solid #f4dacd;
+    color: var(--orange);
+    text-align: center;
+    font-size: 17px;
+    line-height: 1;
+    font-weight: 900;
+    background: linear-gradient(180deg, #fff7f2, #fff);
+  }
+
+  .writing-row {
+    display: grid;
+    grid-template-columns: 64px minmax(0, 1fr);
+    align-items: center;
+    min-height: 66px;
+    padding: 10px 18px;
+    border-bottom: 1px solid #f5e3da;
+  }
+
+  .writing-row:last-child { border-bottom: 0; }
+
+  .writing-row img,
+  .type-icon,
+  .tag-pill img,
+  .outcome-card img {
+    width: 42px;
+    height: 42px;
+    object-fit: contain;
+    filter: drop-shadow(0 7px 11px rgba(255, 90, 0, .13));
+  }
+
+  .writing-row p {
+    margin: 0;
+    color: #192235;
+    font-size: 15px;
+    line-height: 1.48;
+    font-weight: 660;
+  }
+
+  .arrow-stack {
+    display: grid;
+    gap: 22px;
+    justify-items: center;
+  }
+
+  .arrow-stack img {
+    width: 34px;
+    height: 34px;
+    object-fit: contain;
+  }
+
+  .notice-box {
+    margin-top: 16px;
+    overflow: hidden;
+    border: 1px solid #f4dfd4;
+    border-radius: 12px;
+    background: #fff;
+  }
+
+  .notice-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 42px;
+    padding: 10px 24px;
+    background: #fff7f2;
+    color: #223047;
+    font-size: 15px;
+    line-height: 1.45;
+    font-weight: 680;
+  }
+
+  .notice-head img {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+  }
+
+  .notice-head strong,
+  .density-note strong {
+    color: var(--orange);
+    font-weight: 900;
+  }
+
+  .check-lines {
+    padding: 12px 26px 13px;
+    display: grid;
+    gap: 7px;
+  }
+
+  .check-line {
+    display: grid;
+    grid-template-columns: 28px minmax(0, 1fr);
+    gap: 12px;
+    align-items: center;
+    color: #172033;
+    font-size: 14px;
+    line-height: 1.42;
+    font-weight: 620;
+  }
+
+  .check-line img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+  }
+
+  .promise-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.12fr) 48px minmax(0, .95fr);
+    gap: 16px;
+    align-items: center;
+  }
+
+  .promise-table,
+  .strong-table {
+    overflow: hidden;
+    border: 1px solid #f3dbce;
+    border-radius: 12px;
+    background: #fff;
+  }
+
+  .promise-head,
+  .promise-row {
+    display: grid;
+    grid-template-columns: 1.02fr 1.42fr;
+    align-items: center;
+    height: 82px;
+  }
+
+  .promise-head > div,
+  .promise-row > div {
+    height: 100%;
+    padding: 12px 16px;
+    border-right: 1px solid #f3dbce;
+    border-bottom: 1px solid #f3dbce;
+  }
+
+  .promise-head > div:last-child,
+  .promise-row > div:last-child { border-right: 0; }
+  .promise-row:last-child > div { border-bottom: 0; }
+
+  .promise-head > div,
+  .strong-table .strong-head {
+    color: var(--orange);
+    text-align: center;
+    font-size: 16px;
+    line-height: 1.2;
+    font-weight: 900;
+    background: linear-gradient(180deg, #fff7f2, #fff);
+  }
+
+  .promise-head {
+    height: 52px;
+  }
+
+  .strong-table .strong-head {
+    height: 52px;
+  }
+
+  .promise-head > div,
+  .promise-row > div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .type-label {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 42px max-content;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+    color: #172033;
+    font-size: 15px;
+    line-height: 1;
+    font-weight: 730;
+  }
+
+  .weak-text {
+    color: #172033;
+    text-align: center;
+    font-size: 14px;
+    line-height: 1;
+    font-weight: 650;
+  }
+
+  .strong-head { display: grid; place-items: center; }
+
+  .strong-row {
+    height: 82px;
+    padding: 12px 22px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    border-bottom: 1px solid #f3dbce;
+    color: #172033;
+    font-size: 14px;
+    line-height: 1.45;
+    font-weight: 650;
+  }
+
+  .strong-row:last-child { border-bottom: 0; }
+
+  .density-note {
+    margin-top: 16px;
+    min-height: 60px;
+    padding: 12px 24px 12px 50px;
+    position: relative;
+    border: 1px solid #f4dfd4;
+    border-radius: 12px;
+    background: linear-gradient(90deg, #fff7f2, #fff);
+    color: #172033;
+    font-size: 14px;
+    line-height: 1.48;
+    font-weight: 620;
+  }
+
+  .density-note img {
+    position: absolute;
+    left: 22px;
+    top: 14px;
+    width: 20px;
+    height: 20px;
+  }
+
+  .tag-row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 22px;
+    margin: 14px 0 14px;
+  }
+
+  .tag-pill {
+    min-height: 52px;
+    padding: 10px 18px;
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr);
+    gap: 12px;
+    align-items: center;
+    border: 1px solid #f4dfd4;
+    border-radius: 10px;
+    background: linear-gradient(180deg, #fffdfb, #fff8f4);
+    color: var(--orange);
+    font-size: 15px;
+    line-height: 1.35;
+    font-weight: 850;
+  }
+
+  .flow-title {
+    margin: 0 0 10px;
+    color: #1f2937;
+    font-size: 15px;
+    line-height: 1.4;
+    font-weight: 670;
+  }
+
+  .outcome-flow {
+    display: grid;
+    grid-template-columns: 1fr 42px 1fr 42px 1.35fr;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .outcome-card {
+    min-height: 78px;
+    padding: 10px 16px;
+    display: grid;
+    grid-template-columns: 56px minmax(0, 1fr);
+    gap: 12px;
+    align-items: center;
+    border: 1px solid #e9f3ee;
+    border-radius: 12px;
+    background: linear-gradient(180deg, #f7fffb, #fff);
+  }
+
+  .outcome-card.blue {
+    border-color: #e1ecfb;
+    background: linear-gradient(180deg, #f7fbff, #fff);
+  }
+
+  .outcome-card.orange {
+    border-color: #f4dfd4;
+    background: linear-gradient(180deg, #fff8f2, #fff);
+  }
+
+  .outcome-card strong {
+    display: block;
+    color: #27965e;
+    font-size: 14px;
+    line-height: 1.25;
+    font-weight: 900;
+  }
+
+  .outcome-card.blue strong { color: #2f78d4; }
+  .outcome-card.orange strong { color: var(--orange); }
+
+  .outcome-card p {
+    margin: 4px 0 0;
+    color: #202a3b;
+    font-size: 12px;
+    line-height: 1.35;
+    font-weight: 640;
+  }
+
+  .flow-arrow {
+    width: 34px;
+    height: 34px;
+    object-fit: contain;
+    justify-self: center;
+  }
+
+  .language-quote {
+    position: relative;
+    min-height: 48px;
+    margin-top: 12px;
+    display: grid;
+    place-items: center;
+    padding: 10px 80px;
+    border: 1px solid #f4dfd4;
+    border-radius: 12px;
+    background: linear-gradient(90deg, #fff7f2, #fff);
+    color: var(--orange);
+    text-align: center;
+    font-size: 18px;
+    line-height: 1.42;
+    font-weight: 900;
+  }
+
+  .promise-matrix {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) 54px minmax(0, .95fr);
+    gap: 18px;
+    align-items: stretch;
+  }
+
+  .promise-left,
+  .promise-right {
+    overflow: hidden;
+    border: 1px solid #f3dbce;
+    border-radius: 12px;
+    background: #fff;
+  }
+
+  .promise-left {
+    display: grid;
+    grid-template-columns: 1.02fr 1.42fr;
+    grid-template-rows: 58px repeat(5, 84px);
+  }
+
+  .promise-right {
+    display: grid;
+    grid-template-rows: 58px repeat(5, 84px);
+  }
+
+  .promise-cell,
+  .promise-strong-cell {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #f3dbce;
+    color: #172033;
+    font-size: 15px;
+    line-height: 1.35;
+    font-weight: 720;
+  }
+
+  .promise-cell {
+    justify-content: center;
+    padding: 12px 18px;
+    border-right: 1px solid #f3dbce;
+    text-align: center;
+  }
+
+  .promise-cell:nth-child(2n) {
+    border-right: 0;
+  }
+
+  .promise-cell:nth-last-child(-n + 2),
+  .promise-strong-cell:last-child {
+    border-bottom: 0;
+  }
+
+  .promise-cell.head,
+  .promise-strong-head {
+    justify-content: center;
+    color: var(--orange);
+    background: linear-gradient(180deg, #fff7f2, #fff);
+    font-size: 17px;
+    line-height: 1;
+    font-weight: 900;
+  }
+
+  .promise-type {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 13px;
+    min-width: 170px;
+  }
+
+  .promise-type img {
+    width: 42px;
+    height: 42px;
+    object-fit: contain;
+    flex: 0 0 auto;
+    filter: drop-shadow(0 7px 11px rgba(255, 90, 0, .13));
+  }
+
+  .promise-type span,
+  .promise-weak {
+    display: inline-block;
+    transform: translateY(0);
+  }
+
+  .promise-strong-cell {
+    justify-content: flex-start;
+    padding: 12px 22px;
+    text-align: left;
+  }
+
+  .promise-arrows {
+    display: grid;
+    grid-template-rows: 58px repeat(5, 84px);
+    justify-items: center;
+    align-items: center;
+  }
+
+  .promise-arrows::before {
+    content: "";
+  }
+
+  .promise-arrows img {
+    width: 34px;
+    height: 34px;
+    object-fit: contain;
+  }
+
+  .language-quote img {
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    object-fit: contain;
+    opacity: .74;
+  }
+
+  .language-quote .quote-left {
+    left: 27px;
+    top: 14px;
+  }
+
+  .language-quote .quote-right {
+    right: 27px;
+    bottom: 10px;
+  }
+
+  .writing-canvas {
+    width: min(100%, 1220px);
+    min-height: calc(100vh - 76px);
+    padding-bottom: 30px;
+    overflow: hidden;
+    border-radius: 16px;
+    background:
+      radial-gradient(circle at 20px 20px, rgba(255, 106, 0, .055) 1px, transparent 1.4px) 0 0 / 14px 14px,
+      #fff;
+    box-shadow: 0 20px 48px rgba(112, 63, 32, .08);
+  }
+
+  .writing-banner {
+    position: relative;
+    min-height: 172px;
+    overflow: hidden;
+    border-radius: 16px 16px 0 0;
+    background:
+      radial-gradient(circle at 88% 82%, rgba(255, 255, 255, .20), transparent 30%),
+      linear-gradient(90deg, #ff5d14 0%, #ff4a0e 54%, #ff2f07 100%);
+    box-shadow: 0 14px 28px rgba(255, 83, 0, .14);
+  }
+
+  .writing-banner::before {
+    content: "";
+    position: absolute;
+    right: 106px;
+    bottom: -86px;
+    width: 360px;
+    height: 226px;
+    border: 1px solid rgba(255,255,255,.32);
+    border-radius: 50%;
+    box-shadow:
+      0 0 0 24px rgba(255,255,255,.07),
+      0 0 0 48px rgba(255,255,255,.052),
+      0 0 0 72px rgba(255,255,255,.038);
+    pointer-events: none;
+  }
+
+  .writing-banner-copy {
+    position: relative;
+    z-index: 2;
+    min-height: 172px;
+    display: grid;
+    grid-template-columns: 134px 1px minmax(0, 1fr);
+    gap: 26px;
+    align-items: center;
+    padding: 26px 340px 24px 34px;
+    color: #fff;
+  }
+
+  .writing-banner-index {
+    font-size: 90px;
+    line-height: .88;
+    font-weight: 900;
+    text-shadow: 0 10px 22px rgba(90, 27, 0, .16);
+  }
+
+  .writing-banner-divider {
+    height: 92px;
+    background: rgba(255,255,255,.35);
+  }
+
+  .writing-banner h2 {
+    margin: 0;
+    color: #fff;
+    font-size: 44px;
+    line-height: 1.06;
+    font-weight: 900;
+  }
+
+  .writing-banner p {
+    margin: 14px 0 0;
+    color: #fff7ef;
+    font-size: 16px;
+    line-height: 1.5;
+    font-weight: 720;
+  }
+
+  .writing-hero-art {
+    position: absolute;
+    z-index: 1;
+    right: 32px;
+    top: -30px;
+    width: 268px;
+    height: auto;
+    filter: drop-shadow(0 18px 24px rgba(116, 38, 0, .18));
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+
+  .writing-body {
+    padding: 18px 28px 0;
+  }
+
+  .writing-section {
+    margin-top: 14px;
+    padding: 16px 20px;
+    border: 1px solid #f3dbce;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, .88);
+    box-shadow: 0 10px 28px rgba(97, 54, 28, .045);
+  }
+
+  .writing-section:first-child {
+    margin-top: 0;
+  }
+
+  .writing-title {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 7px;
+  }
+
+  .writing-title .num {
+    color: var(--orange);
+    font-size: 26px;
+    line-height: 1;
+    font-weight: 900;
+  }
+
+  .writing-title h3 {
+    margin: 0;
+    color: #121b2d;
+    font-size: 25px;
+    line-height: 1.15;
+    font-weight: 900;
+  }
+
+  .writing-lead {
+    margin: 0 0 12px;
+    color: #202a3b;
+    font-size: 13px;
+    line-height: 1.5;
+    font-weight: 650;
+  }
+
+  .standard-flow {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 18px minmax(0, 1fr) 18px minmax(0, 1fr) 18px minmax(0, 1fr);
+    gap: 13px;
+    align-items: stretch;
+    margin-top: 12px;
+  }
+
+  .standard-step {
+    position: relative;
+    min-height: 128px;
+    padding: 16px 14px 13px;
+    display: grid;
+    grid-template-columns: 34px minmax(0, 1fr);
+    grid-template-rows: 30px 40px 38px;
+    justify-items: stretch;
+    align-items: center;
+    align-content: center;
+    border: 1px solid #f2d8cb;
+    border-radius: 12px;
+    background: linear-gradient(180deg, #fffaf7, #fff);
+    text-align: center;
+  }
+
+  .standard-arrow {
+    align-self: center;
+    justify-self: center;
+    width: 18px;
+    height: 18px;
+    background: var(--orange);
+    clip-path: polygon(0 22%, 58% 22%, 58% 0, 100% 50%, 58% 100%, 58% 78%, 0 78%);
+    opacity: .8;
+  }
+
+  .step-dot {
+    position: static;
+    grid-column: 1;
+    grid-row: 1;
+    width: 25px;
+    height: 25px;
+    display: grid;
+    place-items: center;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #ff8a2a, #ff3d12);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 900;
+    margin: 0 !important;
+  }
+
+  .standard-step strong {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: start;
+    align-self: center;
+    margin: 0;
+    color: var(--orange);
+    font-size: 12px;
+    line-height: 1.3;
+    font-weight: 900;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  .standard-step > span:not(.step-dot) {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-self: center;
+    align-self: center;
+    margin: 0;
+    color: #202a3b;
+    font-size: 12px;
+    line-height: 1.45;
+    font-weight: 650;
+  }
+
+  .standard-step img {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    justify-self: center;
+    align-self: center;
+    width: 42px;
+    height: 42px;
+    margin: 0;
+    object-fit: contain;
+    filter: drop-shadow(0 8px 12px rgba(255, 90, 0, .14));
+  }
+
+  .writing-callout {
+    margin-top: 12px;
+    min-height: 40px;
+    padding: 8px 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    border: 1px solid #f2d8cb;
+    border-radius: 10px;
+    background: linear-gradient(90deg, #fff4ec, #fff);
+    color: #202a3b;
+    font-size: 13px;
+    line-height: 1.45;
+    font-weight: 650;
+  }
+
+  .writing-callout img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+  }
+
+  .type-list {
+    display: grid;
+    gap: 12px;
+  }
+
+  .type-row {
+    display: grid;
+    grid-template-columns: 130px minmax(0, 1.05fr) minmax(0, .95fr);
+    gap: 12px;
+    align-items: stretch;
+  }
+
+  .type-side,
+  .type-flow,
+  .type-example {
+    border: 1px solid #f2d8cb;
+    border-radius: 12px;
+    background: linear-gradient(180deg, #fffaf7, #fff);
+  }
+
+  .type-side {
+    padding: 13px 12px;
+    display: grid;
+    align-content: start;
+    justify-items: center;
+    text-align: center;
+  }
+
+  .type-side h4 {
+    margin: 0;
+    color: var(--orange);
+    font-size: 14px;
+    line-height: 1.48;
+    font-weight: 900;
+  }
+
+  .type-side p {
+    margin: 8px 0 0;
+    color: #344054;
+    font-size: 11px;
+    line-height: 1.5;
+    font-weight: 650;
+  }
+
+  .type-side img {
+    width: 48px;
+    height: 48px;
+    margin-top: 10px;
+    object-fit: contain;
+    filter: drop-shadow(0 8px 12px rgba(255, 90, 0, .13));
+  }
+
+  .type-flow,
+  .type-example {
+    padding: 12px 14px;
+  }
+
+  .flow-chip,
+  .example-tag {
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+    padding: 0 10px;
+    border-radius: 8px;
+    background: #fff1e9;
+    color: var(--orange);
+    font-size: 11px;
+    font-weight: 900;
+  }
+
+  .type-flow p,
+  .type-example p {
+    margin: 7px 0 0;
+    color: #202a3b;
+    font-size: 12px;
+    line-height: 1.48;
+    font-weight: 630;
+  }
+
+  .flow-stack {
+    display: grid;
+    gap: 8px;
+  }
+
+  .flow-box {
+    min-height: 36px;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid #f2d8cb;
+    border-radius: 10px;
+    background: #fff;
+    color: #202a3b;
+    font-size: 12px;
+    line-height: 1.4;
+    font-weight: 650;
+  }
+
+  .flow-box b,
+  .type-example b {
+    color: var(--orange);
+    font-weight: 900;
+  }
+
+  .flow-down {
+    width: 15px;
+    height: 15px;
+    justify-self: center;
+    background: var(--orange);
+    clip-path: polygon(35% 0, 65% 0, 65% 55%, 100% 55%, 50% 100%, 0 55%, 35% 55%);
+    opacity: .75;
+  }
+
+  .type-note {
+    margin-top: 7px;
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    color: #344054;
+    font-size: 11px;
+    line-height: 1.45;
+    font-weight: 650;
+  }
+
+  .type-note::before {
+    content: "★";
+    color: var(--orange);
+    font-size: 13px;
+    line-height: 1;
+    flex: 0 0 auto;
+  }
+
+  .compare-images {
+    display: grid;
+    grid-template-columns: 1fr 28px 1fr;
+    gap: 9px;
+    align-items: center;
+    margin-top: 7px;
+  }
+
+  .compare-images figure,
+  .dish-row figure {
+    margin: 0;
+    min-width: 0;
+  }
+
+  .compare-images img,
+  .dish-row img {
+    width: 100%;
+    aspect-ratio: 1.68;
+    border-radius: 7px;
+    object-fit: cover;
+    box-shadow: 0 8px 18px rgba(16,24,40,.08);
+  }
+
+  .compare-images figcaption,
+  .dish-row figcaption {
+    margin-top: 4px;
+    color: #344054;
+    text-align: center;
+    font-size: 9px;
+    line-height: 1.3;
+    font-weight: 750;
+  }
+
+  .compare-arrow {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+  }
+
+  .dish-row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .compare-points {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 6px 0 0;
+    padding: 0;
+    list-style: none;
+    color: #344054;
+    font-size: 10px;
+    line-height: 1.42;
+    font-weight: 690;
+  }
+
+  .compare-points li {
+    position: relative;
+    padding-left: 12px;
+  }
+
+  .compare-points li::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: var(--orange);
+    font-weight: 900;
+  }
+
+  .type-list > div:nth-child(2) .type-row,
+  .type-list > div:nth-child(3) .type-row {
+    grid-template-columns: 132px minmax(0, 1.08fr) minmax(0, 1fr);
+  }
+
+  .type-list > div:nth-child(2) .type-flow,
+  .type-list > div:nth-child(3) .type-flow,
+  .type-list > div:nth-child(2) .type-example,
+  .type-list > div:nth-child(3) .type-example {
+    padding: 11px 14px;
+  }
+
+  .type-list > div:nth-child(3) .type-example {
+    display: grid;
+    align-content: start;
+  }
+
+  .type-list > div:nth-child(3) .type-example .dish-row {
+    margin-top: 12px;
+    align-items: start;
+  }
+
+  .type-list > div:nth-child(3) .type-example .dish-row img {
+    aspect-ratio: 1.34;
+  }
+
+  .type-list > div:nth-child(3) .type-example .dish-row figcaption {
+    margin-top: 6px;
+    font-size: 10px;
+  }
+
+  .product-line-note {
+    margin-top: 7px;
+    color: #172033;
+    font-size: 11px;
+    line-height: 1.35;
+    font-weight: 780;
+  }
+
+  .product-line-note b {
+    color: var(--orange);
+    font-weight: 900;
+    margin-right: 7px;
+  }
+
+  .product-example-head {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 12px;
+    align-items: baseline;
+    margin-top: 8px;
+    color: #172033;
+    font-size: 12px;
+    line-height: 1.35;
+    font-weight: 780;
+  }
+
+  .product-example-head b,
+  .product-example-label {
+    color: var(--orange);
+    font-weight: 900;
+  }
+
+  .product-example-label {
+    margin-top: 8px;
+    font-size: 11px;
+    line-height: 1.3;
+  }
+
+  .audience-lines {
+    display: grid;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .audience-line {
+    padding-left: 16px;
+    color: #202a3b;
+    font-size: 13px;
+    line-height: 1.45;
+    font-weight: 650;
+  }
+
+  .audience-line::before {
+    content: "→";
+    margin-left: -16px;
+    margin-right: 8px;
+    color: var(--orange);
+    font-weight: 900;
+  }
+
+  .audience-example-head {
+    display: grid;
+    grid-template-columns: auto 1px minmax(0, 1fr);
+    gap: 14px;
+    align-items: center;
+    margin-bottom: 10px;
+    color: #172033;
+    font-size: 12px;
+    line-height: 1.35;
+    font-weight: 820;
+  }
+
+  .audience-example-head b {
+    color: var(--orange);
+    font-weight: 900;
+  }
+
+  .audience-example-head i {
+    width: 1px;
+    height: 16px;
+    background: #ffcdb8;
+  }
+
+  .audience-service-list {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .audience-service-list li {
+    position: relative;
+    display: grid;
+    grid-template-columns: 132px minmax(0, 1fr);
+    gap: 14px;
+    align-items: baseline;
+    padding-left: 16px;
+    color: #172033;
+    font-size: 12px;
+    line-height: 1.45;
+    font-weight: 700;
+  }
+
+  .audience-service-list li::before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: var(--orange);
+    font-weight: 900;
+  }
+
+  .audience-service-list b {
+    color: #172033;
+    font-weight: 860;
+  }
+
+  .audience-service-list em {
+    margin-left: 22px;
+    color: #344054;
+    font-style: normal;
+    font-weight: 700;
+  }
+
+  .audience-service-list span:first-child {
+    color: #172033;
+    font-weight: 800;
+  }
+
+  .title-writing-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.1fr 1fr;
+    gap: 14px;
+    align-items: stretch;
+  }
+
+  .formula-card,
+  .rule-card,
+  .contrast-card {
+    padding: 14px;
+    border: 1px solid #f2d8cb;
+    border-radius: 12px;
+    background: linear-gradient(180deg, #fffaf7, #fff);
+  }
+
+  .formula-card h4,
+  .rule-card h4,
+  .contrast-card h4 {
+    margin: 0 0 10px;
+    color: var(--orange);
+    font-size: 14px;
+    font-weight: 900;
+  }
+
+  .formula-box {
+    margin-top: 9px;
+    padding: 10px;
+    border: 1px solid #f4dfd4;
+    border-radius: 9px;
+    background: #fff;
+    color: #202a3b;
+    font-size: 12px;
+    line-height: 1.55;
+    font-weight: 650;
+  }
+
+  .rule-item {
+    display: grid;
+    grid-template-columns: 24px minmax(0, 1fr);
+    gap: 10px;
+    margin-top: 9px;
+    color: #202a3b;
+    font-size: 12px;
+    line-height: 1.45;
+    font-weight: 650;
+  }
+
+  .rule-item span:first-child {
+    width: 22px;
+    height: 22px;
+    display: grid;
+    place-items: center;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #ff8a2a, #ff3d12);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 900;
+  }
+
+  .contrast-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    overflow: hidden;
+    border: 1px solid #e8eef6;
+    border-radius: 10px;
+    color: #202a3b;
+    font-size: 11px;
+    line-height: 1.4;
+    font-weight: 650;
+  }
+
+  .contrast-table th,
+  .contrast-table td {
+    padding: 9px 10px;
+    border-bottom: 1px solid #e8eef6;
+    text-align: center;
+  }
+
+  .contrast-table th {
+    color: #172033;
+    background: #f7fbff;
+    font-weight: 900;
+  }
+
+  .contrast-table tr:last-child td {
+    border-bottom: 0;
+  }
+
+  .density-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+    margin-top: 14px;
+  }
+
+  .density-item {
+    min-height: 86px;
+    display: grid;
+    grid-template-columns: 62px minmax(0, 1fr);
+    gap: 12px;
+    align-items: center;
+    border-right: 1px solid #f2d8cb;
+  }
+
+  .density-item:last-child {
+    border-right: 0;
+  }
+
+  .density-item img {
+    width: 56px;
+    height: 56px;
+    object-fit: contain;
+    filter: drop-shadow(0 8px 14px rgba(255, 90, 0, .13));
+  }
+
+  .density-item strong {
+    display: block;
+    color: var(--orange);
+    font-size: 14px;
+    line-height: 1.3;
+    font-weight: 900;
+  }
+
+  .density-item span {
+    display: block;
+    margin-top: 4px;
+    color: #344054;
+    font-size: 12px;
+    line-height: 1.4;
+    font-weight: 650;
+  }
+
+  .transition-canvas {
+    width: min(100%, 1220px);
+    min-height: calc(100vh - 76px);
+    padding-bottom: 28px;
+    overflow: hidden;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 20px 48px rgba(112, 63, 32, .08);
+  }
+
+  .transition-banner {
+    position: relative;
+    min-height: 206px;
+    overflow: hidden;
+    border-radius: 16px 16px 0 0;
+    background:
+      radial-gradient(circle at 88% 82%, rgba(255, 255, 255, .20), transparent 30%),
+      linear-gradient(90deg, #ff4f12 0%, #ff5b10 52%, #ff3f0b 100%);
+    box-shadow: 0 14px 28px rgba(255, 83, 0, .14);
+  }
+
+  .transition-banner::before {
+    content: "";
+    position: absolute;
+    right: 170px;
+    bottom: -92px;
+    width: 420px;
+    height: 250px;
+    border: 1px solid rgba(255,255,255,.28);
+    border-radius: 50%;
+    box-shadow:
+      0 0 0 28px rgba(255,255,255,.07),
+      0 0 0 56px rgba(255,255,255,.055),
+      0 0 0 84px rgba(255,255,255,.04);
+    opacity: .72;
+    pointer-events: none;
+  }
+
+  .transition-banner-copy {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: 148px 1px minmax(0, 1fr);
+    align-items: center;
+    gap: 28px;
+    min-height: 206px;
+    padding: 36px 360px 34px 42px;
+    color: #fff;
+  }
+
+  .transition-banner-index {
+    font-size: 96px;
+    line-height: .88;
+    font-weight: 900;
+    text-shadow: 0 10px 24px rgba(98, 32, 0, .16);
+  }
+
+  .transition-banner-divider {
+    height: 96px;
+    background: rgba(255,255,255,.36);
+  }
+
+  .transition-banner h2 {
+    margin: 0;
+    color: #fff;
+    font-size: 52px;
+    line-height: 1.05;
+    font-weight: 900;
+  }
+
+  .transition-banner p {
+    margin: 16px 0 0;
+    color: #fff7ef;
+    font-size: 18px;
+    line-height: 1.45;
+    font-weight: 720;
+  }
+
+  .transition-hero-art {
+    position: absolute;
+    right: 48px;
+    bottom: 4px;
+    z-index: 1;
+    width: 286px;
+    height: auto;
+    filter: drop-shadow(0 18px 22px rgba(116, 38, 0, .18));
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+
+  .transition-body {
+    position: relative;
+    z-index: 2;
+    padding: 26px 30px 0;
+  }
+
+  .transition-section {
+    margin-top: 20px;
+    padding: 22px 26px 24px;
+    border: 1px solid rgba(255, 106, 0, .12);
+    border-radius: 16px;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,253,250,.98)),
+      radial-gradient(rgba(255, 151, 100, .14) 1px, transparent 1px);
+    background-size: auto, 8px 8px;
+    box-shadow: 0 10px 28px rgba(97, 54, 28, .045);
+  }
+
+  .transition-section:first-child { margin-top: 0; }
+
+  .transition-title {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin: 0 0 9px;
+  }
+
+  .transition-title .num {
+    color: var(--orange);
+    font-size: 26px;
+    line-height: 1;
+    font-weight: 900;
+  }
+
+  .transition-title h3 {
+    margin: 0;
+    color: #151a24;
+    font-size: 24px;
+    line-height: 1.18;
+    font-weight: 900;
+  }
+
+  .transition-lead {
+    margin: 0 0 16px;
+    color: #202a3b;
+    font-size: 15px;
+    line-height: 1.45;
+    font-weight: 560;
+  }
+
+  .chapter-flow-grid {
+    display: grid;
+    grid-template-columns: minmax(0, .86fr) 50px minmax(0, 1fr);
+    gap: 18px;
+    align-items: center;
+  }
+
+  .chapter-card,
+  .example-card,
+  .ending-layers,
+  .upgrade-table,
+  .closing-callout {
+    overflow: hidden;
+    border: 1px solid #f3dbce;
+    border-radius: 14px;
+    background: rgba(255,255,255,.92);
+  }
+
+  .chapter-card {
+    padding: 18px 22px;
+  }
+
+  .chapter-item {
+    display: grid;
+    grid-template-columns: 46px minmax(0, 1fr);
+    gap: 12px;
+    align-items: center;
+    min-height: 76px;
+    border-bottom: 1px solid #f4e4db;
+  }
+
+  .chapter-item:last-child { border-bottom: 0; }
+
+  .chapter-item img {
+    width: 38px;
+    height: 38px;
+    object-fit: contain;
+    justify-self: center;
+    filter: drop-shadow(0 8px 13px rgba(255, 90, 0, .13));
+  }
+
+  .chapter-item strong {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--orange);
+    font-size: 16px;
+    line-height: 1.2;
+    font-weight: 900;
+  }
+
+  .chapter-item p {
+    margin: 0;
+    color: #202a3b;
+    font-size: 14px;
+    line-height: 1.42;
+    font-weight: 560;
+  }
+
+  .center-arrow {
+    width: 42px;
+    height: 42px;
+    object-fit: contain;
+    justify-self: center;
+  }
+
+  .example-card {
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,250,246,.98)),
+      url("handoff_work_06/backgrounds/background-content-card.png") center / cover no-repeat;
+  }
+
+  .example-badge {
+    width: max-content;
+    margin: 14px auto 12px;
+    padding: 8px 20px;
+    color: #fff;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #ff8b39, #ff5120);
+    font-size: 15px;
+    line-height: 1;
+    font-weight: 840;
+    box-shadow: 0 8px 18px rgba(255, 90, 0, .18);
+  }
+
+  .example-step {
+    display: grid;
+    grid-template-columns: 30px minmax(0, 1fr);
+    gap: 10px;
+    align-items: center;
+    min-height: 62px;
+    padding: 12px 26px;
+    border-top: 1px solid #f4e0d6;
+    color: #182235;
+    font-size: 14px;
+    line-height: 1.42;
+    font-weight: 610;
+  }
+
+  .example-step img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+    justify-self: center;
+  }
+
+  .example-step strong {
+    color: var(--orange);
+    font-weight: 900;
+  }
+
+  .ending-layers {
+    display: grid;
+    gap: 0;
+  }
+
+  .ending-layer {
+    display: grid;
+    grid-template-columns: 252px minmax(0, 1fr);
+    min-height: 84px;
+    border-bottom: 1px solid #f4e1d7;
+  }
+
+  .ending-layer:last-child { border-bottom: 0; }
+
+  .ending-layer-label,
+  .ending-layer-copy {
+    display: flex;
+    align-items: center;
+  }
+
+  .ending-layer-label {
+    gap: 14px;
+    padding: 13px 20px;
+    border-right: 1px solid #f4e1d7;
+    background: linear-gradient(90deg, rgba(242,255,248,.95), rgba(255,255,255,.92));
+    color: #35a46c;
+    font-size: 16px;
+    font-weight: 900;
+  }
+
+  .ending-layer:nth-child(2) .ending-layer-label {
+    background: linear-gradient(90deg, rgba(247,251,255,.96), rgba(255,255,255,.92));
+    color: #2f78d4;
+  }
+
+  .ending-layer:nth-child(3) .ending-layer-label {
+    background: linear-gradient(90deg, rgba(255,248,242,.98), rgba(255,255,255,.92));
+    color: var(--orange);
+  }
+
+  .ending-layer-label img {
+    width: 54px;
+    height: 54px;
+    object-fit: contain;
+    filter: drop-shadow(0 9px 14px rgba(69, 128, 91, .15));
+  }
+
+  .ending-layer-copy {
+    padding: 14px 36px;
+    color: #1b2638;
+    font-size: 16px;
+    line-height: 1.62;
+    font-weight: 610;
+  }
+
+  .upgrade-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,252,249,.98)),
+      url("handoff_work_06/backgrounds/background-upgrade-table.png") center / cover no-repeat;
+  }
+
+  .upgrade-table th,
+  .upgrade-table td {
+    padding: 12px 14px;
+    border-right: 1px solid #f2ded3;
+    border-bottom: 1px solid #f2ded3;
+    color: #1b2638;
+    font-size: 14px;
+    line-height: 1.45;
+    font-weight: 610;
+    vertical-align: middle;
+  }
+
+  .upgrade-table th {
+    color: var(--orange);
+    text-align: center;
+    font-size: 15px;
+    line-height: 1;
+    font-weight: 900;
+    background: linear-gradient(180deg, #fff2e9, #fffaf6);
+  }
+
+  .upgrade-table th:last-child,
+  .upgrade-table td:last-child { border-right: 0; }
+  .upgrade-table tr:last-child td { border-bottom: 0; }
+
+  .upgrade-table .icon-cell {
+    width: 86px;
+    text-align: left;
+    padding-left: 22px;
+  }
+
+  .upgrade-table .icon-cell img {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+    filter: drop-shadow(0 7px 11px rgba(255, 90, 0, .12));
+  }
+
+  .upgrade-index {
+    display: inline-grid;
+    grid-template-columns: 36px 34px;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .upgrade-lines {
+    display: grid;
+    gap: 5px;
+  }
+
+  .upgrade-lines span {
+    display: block;
+    width: 34px;
+    height: 4px;
+    border-radius: 999px;
+    background: rgba(255, 106, 0, .10);
+  }
+
+  .upgrade-lines span:nth-child(2) {
+    width: 26px;
+  }
+
+  .upgrade-table .upgrade-copy {
+    color: var(--orange);
+    font-weight: 780;
+  }
+
+  .upgrade-table .arrow-mark {
+    display: inline-block;
+    min-width: 22px;
+    margin-right: 10px;
+    color: #1b2638;
+    font-weight: 900;
+  }
+
+  .taboo-canvas {
+    width: min(100%, 1220px);
+    min-height: calc(100vh - 76px);
+    padding-bottom: 34px;
+    overflow: hidden;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 20px 48px rgba(112, 63, 32, .08);
+  }
+
+  .taboo-banner {
+    position: relative;
+    min-height: 206px;
+    overflow: hidden;
+    border-radius: 16px 16px 0 0;
+    background: var(--orange) url("design_handoff/backgrounds/background-header-orange.png") center / cover no-repeat;
+    box-shadow: 0 14px 28px rgba(255, 83, 0, .14);
+  }
+
+  .taboo-banner-copy {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: 148px 1px minmax(0, 1fr);
+    align-items: center;
+    gap: 28px;
+    min-height: 206px;
+    padding: 36px 370px 34px 42px;
+    color: #fff;
+  }
+
+  .taboo-banner-index {
+    font-size: 96px;
+    line-height: .88;
+    font-weight: 900;
+    text-shadow: 0 10px 24px rgba(98, 32, 0, .16);
+  }
+
+  .taboo-banner-divider {
+    height: 96px;
+    background: rgba(255,255,255,.36);
+  }
+
+  .taboo-banner h2 {
+    margin: 0;
+    color: #fff;
+    font-size: 52px;
+    line-height: 1.05;
+    font-weight: 900;
+  }
+
+  .taboo-banner p {
+    margin: 16px 0 0;
+    color: #fff7ef;
+    font-size: 18px;
+    line-height: 1.45;
+    font-weight: 720;
+  }
+
+  .taboo-hero-art {
+    position: absolute;
+    right: 92px;
+    top: 8px;
+    z-index: 1;
+    width: 198px;
+    height: auto;
+    filter: drop-shadow(0 18px 22px rgba(116, 38, 0, .18));
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+
+  .taboo-body {
+    position: relative;
+    z-index: 2;
+    padding: 26px 30px 0;
+  }
+
+  .taboo-panel {
+    padding: 28px 28px 34px;
+    border: 1px solid rgba(255, 106, 0, .12);
+    border-radius: 16px;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.95), rgba(255,253,250,.98)),
+      url("design_handoff/backgrounds/background-table-panel-light.png") center / cover no-repeat;
+    box-shadow: 0 10px 28px rgba(97, 54, 28, .045);
+  }
+
+  .taboo-table {
+    width: 100%;
+    overflow: hidden;
+    border: 1px solid #f3dbce;
+    border-radius: 12px;
+    background: rgba(255,255,255,.94);
+  }
+
+  .taboo-row {
+    display: grid;
+    grid-template-columns: 1.04fr 1.24fr 1.6fr;
+    min-height: 70px;
+    border-bottom: 1px solid #f3dbce;
+  }
+
+  .taboo-row:last-child { border-bottom: 0; }
+
+  .taboo-head {
+    min-height: 78px;
+    background: linear-gradient(180deg, #fff6f0, #fffaf7);
+  }
+
+  .taboo-cell {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 22px;
+    border-right: 1px solid #f3dbce;
+    color: #1b2537;
+    font-size: 16px;
+    line-height: 1.45;
+    font-weight: 640;
+  }
+
+  .taboo-cell:last-child { border-right: 0; }
+
+  .taboo-head .taboo-cell {
+    justify-content: center;
+    color: var(--orange);
+    font-size: 21px;
+    line-height: 1.1;
+    font-weight: 900;
+  }
+
+  .taboo-cell img {
+    flex: 0 0 auto;
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    filter: drop-shadow(0 7px 11px rgba(255, 90, 0, .12));
+  }
+
+  .taboo-head .taboo-cell img {
+    width: 28px;
+    height: 28px;
+  }
+
+  .taboo-bad,
+  .taboo-fix {
+    display: grid;
+    grid-template-columns: 34px minmax(0, 1fr);
+    column-gap: 16px;
+    align-items: center;
+  }
+
+  .taboo-bad img,
+  .taboo-fix img {
+    justify-self: center;
+  }
+
+  .taboo-bad {
+    font-weight: 820;
+  }
+
+  .taboo-fix {
+    color: var(--orange);
+    font-weight: 760;
+  }
+
+  .layout-canvas {
+    width: min(100%, 1220px);
+    margin-top: -16px;
+    min-height: calc(100vh - 76px);
+    padding-bottom: 30px;
+    overflow: hidden;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 20px 48px rgba(112, 63, 32, .08);
+  }
+
+  .layout-banner {
+    position: relative;
+    min-height: 206px;
+    overflow: hidden;
+    border-radius: 16px 16px 0 0;
+    background:
+      radial-gradient(circle at 88% 82%, rgba(255, 255, 255, .20), transparent 30%),
+      linear-gradient(90deg, #ff4f12 0%, #ff5b10 52%, #ff3f0b 100%);
+    box-shadow: 0 14px 28px rgba(255, 83, 0, .14);
+  }
+
+  .layout-banner::before {
+    content: "";
+    position: absolute;
+    right: 170px;
+    bottom: -92px;
+    width: 420px;
+    height: 250px;
+    border: 1px solid rgba(255,255,255,.28);
+    border-radius: 50%;
+    box-shadow:
+      0 0 0 28px rgba(255,255,255,.07),
+      0 0 0 56px rgba(255,255,255,.055),
+      0 0 0 84px rgba(255,255,255,.04);
+    opacity: .72;
+    pointer-events: none;
+  }
+
+  .layout-banner-copy {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: 148px 1px minmax(0, 1fr);
+    align-items: center;
+    gap: 28px;
+    min-height: 206px;
+    padding: 36px 360px 34px 42px;
+    color: #fff;
+  }
+
+  .layout-banner-index {
+    font-size: 96px;
+    line-height: .88;
+    font-weight: 900;
+    text-shadow: 0 10px 24px rgba(98, 32, 0, .16);
+  }
+
+  .layout-banner-divider {
+    height: 96px;
+    background: rgba(255,255,255,.36);
+  }
+
+  .layout-banner h2 {
+    margin: 0;
+    color: #fff;
+    font-size: 52px;
+    line-height: 1.05;
+    font-weight: 900;
+  }
+
+  .layout-banner p {
+    margin: 16px 0 0;
+    color: #fff7ef;
+    font-size: 18px;
+    line-height: 1.62;
+    font-weight: 720;
+  }
+
+  .layout-hero-art {
+    position: absolute;
+    right: 92px;
+    top: 4px;
+    z-index: 1;
+    width: 246px;
+    height: auto;
+    filter: drop-shadow(0 18px 24px rgba(116, 38, 0, .18));
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+
+  .layout-body {
+    position: relative;
+    z-index: 2;
+    padding: 14px 30px 0;
+  }
+
+  .layout-rule {
+    min-height: 148px;
+    margin-top: 16px;
+    padding: 18px 26px;
+    display: grid;
+    grid-template-columns: 96px minmax(0, 1fr) 430px;
+    gap: 22px;
+    align-items: center;
+    border: 1px solid rgba(255, 106, 0, .14);
+    border-radius: 16px;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,253,250,.98)),
+      url("design_handoff_page07/backgrounds/background-content-panel.png") center / cover no-repeat;
+    box-shadow: 0 10px 28px rgba(97, 54, 28, .045);
+  }
+
+  .layout-rule:first-child { margin-top: 0; }
+
+  .layout-no {
+    display: grid;
+    place-items: center;
+    width: 66px;
+    height: 66px;
+    color: #fff;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #ff7d22, #ff3f07);
+    box-shadow: 0 12px 20px rgba(255, 90, 0, .18);
+    font-size: 31px;
+    line-height: 1;
+    font-weight: 900;
+  }
+
+  .layout-copy h3 {
+    margin: 0 0 20px;
+    color: #172033;
+    font-size: 28px;
+    line-height: 1.15;
+    font-weight: 900;
+  }
+
+  .layout-point {
+    display: grid;
+    grid-template-columns: 54px minmax(0, 1fr);
+    gap: 18px;
+    align-items: start;
+  }
+
+  .layout-point-badge {
+    display: inline-grid;
+    place-items: center;
+    min-height: 36px;
+    padding: 0 10px;
+    border: 1px solid rgba(255, 90, 0, .22);
+    border-radius: 8px;
+    color: var(--orange);
+    background: #fff8f3;
+    font-size: 16px;
+    font-weight: 900;
+  }
+
+  .layout-point p {
+    margin: 0;
+    color: #202a3b;
+    font-size: 16px;
+    line-height: 1.72;
+    font-weight: 610;
+  }
+
+  .layout-visual {
+    min-width: 0;
+  }
+
+  .layout-swatches {
+    display: grid;
+    grid-template-columns: repeat(3, 84px);
+    gap: 28px;
+    justify-content: center;
+  }
+
+  .layout-swatch {
+    text-align: center;
+    color: #344054;
+    font-size: 14px;
+    font-weight: 650;
+  }
+
+  .layout-swatch i {
+    display: block;
+    width: 76px;
+    height: 76px;
+    margin: 0 auto 12px;
+    border-radius: 10px;
+    box-shadow: 0 12px 18px rgba(43, 38, 34, .12);
+  }
+
+  .layout-swatch .orange { background: linear-gradient(135deg, #ff8a12, #ff5100); }
+  .layout-swatch .gray { background: linear-gradient(135deg, #f1f2f4, #cfd3d8); }
+  .layout-swatch .black { background: linear-gradient(135deg, #444a50, #151a20); }
+
+  .layout-type-demo {
+    padding-left: 28px;
+    border-left: 1px solid #e5d9d0;
+  }
+
+  .layout-type-line {
+    display: grid;
+    grid-template-columns: max-content minmax(80px, 1fr) max-content;
+    gap: 12px;
+    align-items: center;
+    margin: 11px 0;
+    color: #172033;
+    font-weight: 900;
+  }
+
+  .layout-type-line strong {
+    font-size: 28px;
+    line-height: 1.1;
+  }
+
+  .layout-type-line.medium strong { font-size: 19px; }
+  .layout-type-line.small strong { font-size: 12px; font-weight: 700; }
+
+  .layout-type-line span {
+    border-top: 1px dashed rgba(255, 90, 0, .4);
+  }
+
+  .layout-type-line em {
+    color: var(--orange);
+    font-style: normal;
+    font-size: 14px;
+  }
+
+  .layout-compare,
+  .layout-photo-pair {
+    display: grid;
+    grid-template-columns: 1fr 42px 1fr;
+    gap: 14px;
+    align-items: center;
+  }
+
+  .layout-photo-pair {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .layout-mini-card {
+    text-align: center;
+  }
+
+  .layout-mini-card .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 8px;
+    color: var(--orange);
+    font-size: 14px;
+    font-weight: 900;
+  }
+
+  .layout-mini-card.good .status { color: #18a957; }
+
+  .layout-mini-card .status b {
+    display: grid;
+    place-items: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 999px;
+    color: #fff;
+    background: var(--orange);
+    font-size: 14px;
+  }
+
+  .layout-mini-card.good .status b { background: #32b36b; }
+
+  .layout-mini-card img {
+    width: 100%;
+    height: 82px;
+    object-fit: contain;
+    border-radius: 9px;
+    filter: drop-shadow(0 8px 14px rgba(44, 36, 30, .08));
+  }
+
+  .layout-photo-pair img {
+    height: 92px;
+    object-fit: cover;
+    border-radius: 10px;
+  }
+
+  .layout-photo-pair .layout-mini-card {
+    color: #344054;
+    font-size: 14px;
+    line-height: 1.3;
+    font-weight: 650;
+  }
+
+  .layout-arrow {
+    width: 38px;
+    height: 38px;
+    object-fit: contain;
+    filter: drop-shadow(0 8px 12px rgba(255, 90, 0, .16));
+  }
+
+  .layout-footer {
+    margin-top: 20px;
+    min-height: 96px;
+    padding: 18px 34px;
+    display: grid;
+    grid-template-columns: 88px minmax(0, 1fr) 144px;
+    gap: 20px;
+    align-items: center;
+    border: 1px solid #f3dbce;
+    border-radius: 16px;
+    background:
+      linear-gradient(90deg, rgba(255,240,232,.92), rgba(255,250,246,.98)),
+      url("design_handoff_page07/backgrounds/background-footer-callout.png") center / cover no-repeat;
+  }
+
+  .layout-footer img:first-child {
+    width: 74px;
+    height: 74px;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 16px rgba(255, 90, 0, .14));
+  }
+
+  .layout-footer strong {
+    color: var(--orange);
+    font-size: 22px;
+    line-height: 1.36;
+    font-weight: 900;
+  }
+
+  .layout-footer img:last-child {
+    width: 132px;
+    height: 88px;
+    object-fit: contain;
+    justify-self: end;
+  }
+
+  .checklist-canvas {
+    width: min(100%, 1220px);
+    min-height: calc(100vh - 76px);
+    padding-bottom: 30px;
+    overflow: hidden;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 20px 48px rgba(112, 63, 32, .08);
+  }
+
+  .checklist-banner {
+    position: relative;
+    min-height: 206px;
+    overflow: hidden;
+    border-radius: 16px 16px 0 0;
+    background:
+      radial-gradient(circle at 88% 82%, rgba(255, 255, 255, .20), transparent 30%),
+      linear-gradient(90deg, #ff4f12 0%, #ff5b10 52%, #ff3f0b 100%);
+    box-shadow: 0 14px 28px rgba(255, 83, 0, .14);
+  }
+
+  .checklist-banner::before {
+    content: "";
+    position: absolute;
+    right: 170px;
+    bottom: -92px;
+    width: 420px;
+    height: 250px;
+    border: 1px solid rgba(255,255,255,.28);
+    border-radius: 50%;
+    box-shadow:
+      0 0 0 28px rgba(255,255,255,.07),
+      0 0 0 56px rgba(255,255,255,.055),
+      0 0 0 84px rgba(255,255,255,.04);
+    opacity: .72;
+    pointer-events: none;
+  }
+
+  .checklist-banner-copy {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: 148px 1px minmax(0, 1fr);
+    align-items: center;
+    gap: 28px;
+    min-height: 206px;
+    padding: 34px 430px 32px 42px;
+    color: #fff;
+  }
+
+  .checklist-banner-index {
+    font-size: 96px;
+    line-height: .88;
+    font-weight: 900;
+    text-shadow: 0 10px 24px rgba(98, 32, 0, .16);
+  }
+
+  .checklist-banner-divider {
+    height: 96px;
+    background: rgba(255,255,255,.36);
+  }
+
+  .checklist-banner h2 {
+    margin: 0;
+    color: #fff;
+    font-size: 52px;
+    line-height: 1.06;
+    font-weight: 900;
+  }
+
+  .checklist-banner p {
+    margin: 16px 0 0;
+    color: #fff7ef;
+    font-size: 18px;
+    line-height: 1.58;
+    font-weight: 720;
+  }
+
+  .checklist-hero-art {
+    position: absolute;
+    right: 50px;
+    top: -18px;
+    z-index: 1;
+    width: 288px;
+    height: auto;
+    filter: drop-shadow(0 18px 24px rgba(116, 38, 0, .18));
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+
+  .checklist-body {
+    position: relative;
+    z-index: 2;
+    padding: 22px 30px 0;
+  }
+
+  .check-card {
+    --check-bg: url("design_handoff_page11/backgrounds/background-card-orange.png");
+    --check-color: var(--orange);
+    min-height: 196px;
+    margin-top: 16px;
+    padding: 24px 28px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 310px;
+    gap: 28px;
+    align-items: center;
+    border: 1px solid rgba(255, 106, 0, .15);
+    border-radius: 16px;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,253,250,.98)),
+      var(--check-bg) center / cover no-repeat;
+    box-shadow: 0 10px 28px rgba(97, 54, 28, .045);
+  }
+
+  .check-card:first-child { margin-top: 0; }
+  .check-card.blue { --check-bg: url("design_handoff_page11/backgrounds/background-card-blue.png"); border-color: rgba(49, 119, 233, .18); }
+  .check-card.green { --check-bg: url("design_handoff_page11/backgrounds/background-card-green.png"); border-color: rgba(67, 176, 78, .18); }
+  .check-card.yellow { --check-bg: url("design_handoff_page11/backgrounds/background-card-yellow.png"); border-color: rgba(245, 171, 0, .20); }
+  .check-card.red { --check-bg: url("design_handoff_page11/backgrounds/background-card-red.png"); border-color: rgba(255, 86, 36, .16); }
+
+  .check-card-head {
+    display: grid;
+    grid-template-columns: 78px minmax(0, 1fr);
+    gap: 18px;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  .check-card-head img {
+    width: 66px;
+    height: 66px;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 16px rgba(255, 90, 0, .13));
+  }
+
+  .check-card-title {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    color: var(--check-color, var(--orange));
+    font-size: 27px;
+    line-height: 1.15;
+    font-weight: 900;
+  }
+
+  .check-card-title::before {
+    content: "";
+    width: 3px;
+    height: 30px;
+    border-radius: 999px;
+    background: currentColor;
+  }
+
+  .check-items {
+    display: grid;
+    gap: 13px;
+    margin-left: 0;
+  }
+
+  .check-item {
+    display: grid;
+    grid-template-columns: 24px minmax(0, 1fr);
+    gap: 14px;
+    align-items: start;
+    color: #172033;
+    font-size: 16px;
+    line-height: 1.55;
+    font-weight: 610;
+  }
+
+  .check-item img {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+    margin-top: 2px;
+  }
+
+  .check-card-visual {
+    display: grid;
+    place-items: center;
+  }
+
+  .check-card-visual img {
+    width: 250px;
+    max-height: 178px;
+    object-fit: contain;
+    filter: drop-shadow(0 14px 22px rgba(78, 56, 42, .10));
+  }
+
+  .check-card.blue { --check-color: #1f73e0; }
+  .check-card.green { --check-color: #32a845; }
+  .check-card.yellow { --check-color: #eaa100; }
+  .check-card.red { --check-color: #ff4d1d; }
+
+  .check-footer {
+    margin-top: 20px;
+    min-height: 104px;
+    padding: 18px 34px;
+    display: grid;
+    grid-template-columns: 88px minmax(0, 1fr) 168px;
+    gap: 22px;
+    align-items: center;
+    border: 1px solid #f3dbce;
+    border-radius: 16px;
+    background:
+      linear-gradient(90deg, rgba(255,240,232,.92), rgba(255,250,246,.98)),
+      url("design_handoff_page11/backgrounds/background-footer-orange.png") center / cover no-repeat;
+  }
+
+  .check-footer img:first-child {
+    width: 76px;
+    height: 76px;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 16px rgba(255, 90, 0, .14));
+  }
+
+  .check-footer strong {
+    color: var(--orange);
+    font-size: 28px;
+    line-height: 1.26;
+    font-weight: 900;
+  }
+
+  .check-footer img:last-child {
+    width: 156px;
+    height: 96px;
+    object-fit: contain;
+    justify-self: end;
+  }
+
+  .team-canvas {
+    width: min(100%, 1220px);
+    min-height: calc(100vh - 76px);
+    padding-bottom: 34px;
+    overflow: hidden;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 20px 48px rgba(112, 63, 32, .08);
+  }
+
+  .team-banner {
+    position: relative;
+    min-height: 166px;
+    overflow: hidden;
+    border-radius: 16px 16px 0 0;
+    background: var(--orange) url("design_handoff_page08/backgrounds/background-header-orange.png") center / cover no-repeat;
+    box-shadow: 0 14px 28px rgba(255, 83, 0, .14);
+  }
+
+  .team-banner-copy {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: 148px 1px minmax(0, 1fr);
+    align-items: center;
+    gap: 28px;
+    min-height: 166px;
+    padding: 24px 380px 22px 42px;
+    color: #fff;
+  }
+
+  .team-banner-index {
+    font-size: 82px;
+    line-height: .88;
+    font-weight: 900;
+    text-shadow: 0 10px 24px rgba(98, 32, 0, .16);
+  }
+
+  .team-banner-divider {
+    height: 82px;
+    background: rgba(255,255,255,.36);
+  }
+
+  .team-banner h2 {
+    margin: 0;
+    color: #fff;
+    font-size: 44px;
+    line-height: 1.08;
+    font-weight: 900;
+  }
+
+  .team-banner p {
+    margin: 10px 0 0;
+    color: #fff7ef;
+    font-size: 19px;
+    line-height: 1.48;
+    font-weight: 720;
+  }
+
+  .team-hero-art {
+    position: absolute;
+    right: 54px;
+    top: -8px;
+    z-index: 1;
+    width: 252px;
+    height: auto;
+    filter: drop-shadow(0 18px 24px rgba(116, 38, 0, .18));
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+
+  .team-body {
+    position: relative;
+    z-index: 2;
+    padding: 20px 30px 0;
+  }
+
+  .team-section {
+    margin-top: 12px;
+    padding: 12px 22px;
+    border: 1px solid rgba(255, 106, 0, .13);
+    border-radius: 16px;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,253,250,.98)),
+      url("design_handoff_page08/backgrounds/background-content-module-card.png") center / cover no-repeat;
+    box-shadow: 0 10px 28px rgba(97, 54, 28, .045);
+  }
+
+  .team-section:first-child { margin-top: 0; }
+
+  .team-title {
+    margin: 0 0 10px;
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    color: #172033;
+    font-size: 23px;
+    line-height: 1.15;
+    font-weight: 900;
+  }
+
+  .team-title strong {
+    color: var(--orange);
+    font-size: 28px;
+    line-height: 1;
+  }
+
+  .team-intro-grid {
+    display: grid;
+    grid-template-columns: 210px minmax(0, 1fr) minmax(0, 1fr);
+    gap: 18px;
+    align-items: stretch;
+  }
+
+  .team-intro-copy {
+    display: flex;
+    align-items: center;
+    color: #202a3b;
+    font-size: 16px;
+    line-height: 1.62;
+    font-weight: 620;
+  }
+
+  .team-order-card {
+    padding: 14px 16px;
+    border: 1px solid #f3dbce;
+    border-radius: 13px;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.94), rgba(255,250,246,.98)),
+      url("design_handoff_page08/backgrounds/background-comparison-card-light.png") center / cover no-repeat;
+  }
+
+  .team-order-card.good {
+    border-color: rgba(57, 178, 114, .24);
+    background:
+      linear-gradient(180deg, rgba(249,255,252,.94), rgba(255,255,255,.98)),
+      url("design_handoff_page08/backgrounds/background-comparison-card-light.png") center / cover no-repeat;
+  }
+
+  .team-order-heading {
+    margin: 0 0 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: var(--orange);
+    font-size: 17px;
+    line-height: 1.2;
+    font-weight: 900;
+  }
+
+  .team-order-card.good .team-order-heading { color: #15945b; }
+
+  .team-order-heading img {
+    width: 26px;
+    height: 26px;
+    object-fit: contain;
+  }
+
+  .team-flow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 34px;
+    margin-bottom: 9px;
+  }
+
+  .team-flow span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 56px;
+    min-height: 30px;
+    padding: 0 10px;
+    border: 1px solid #e5d9d0;
+    border-radius: 6px;
+    color: #344054;
+    background: rgba(255,255,255,.86);
+    font-size: 13px;
+    font-weight: 720;
+  }
+
+  .team-flow .active {
+    color: var(--orange);
+    border-color: rgba(255, 90, 0, .34);
+    background: #fff4ec;
+  }
+
+  .team-flow img {
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+  }
+
+  .team-order-card p {
+    margin: 0;
+    color: #344054;
+    text-align: center;
+    font-size: 13px;
+    line-height: 1.45;
+    font-weight: 640;
+  }
+
+  .team-diagram-section {
+    padding-bottom: 12px;
+  }
+
+  .team-lead {
+    margin: -4px 0 2px;
+    color: #202a3b;
+    font-size: 15px;
+    line-height: 1.52;
+    font-weight: 620;
+  }
+
+  .team-lead mark,
+  .team-profile-copy mark,
+  .team-keyword-card mark,
+  .team-quote strong {
+    color: var(--orange);
+    background: transparent;
+    font-weight: 900;
+  }
+
+  .team-triangle-art {
+    display: block;
+    width: 640px;
+    height: auto;
+    margin: 0 auto;
+    object-fit: contain;
+    filter: drop-shadow(0 14px 22px rgba(255, 90, 0, .08));
+  }
+
+  .team-triangle-wrap {
+    position: relative;
+    height: 416px;
+    margin-top: -34px;
+    display: grid;
+    place-items: center;
+  }
+
+  .team-triangle-wrap::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 208px;
+    z-index: 2;
+    width: 72px;
+    height: 94px;
+    transform: translateX(-50%);
+    border-radius: 12px;
+    background: #fff;
+    pointer-events: none;
+  }
+
+  .team-triangle-wrap::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 50px;
+    z-index: 3;
+    width: 32px;
+    height: 42px;
+    transform: translateX(-50%);
+    background: linear-gradient(180deg, #ff9a35 0%, #ff5a00 100%);
+    clip-path: polygon(31% 0, 69% 0, 69% 48%, 100% 48%, 50% 100%, 0 48%, 31% 48%);
+    filter: drop-shadow(0 8px 12px rgba(255, 90, 0, .22));
+    pointer-events: none;
+  }
+
+  .team-triangle-label {
+    position: absolute;
+    z-index: 4;
+    color: var(--orange);
+    font-size: 16px;
+    line-height: 1.2;
+    font-weight: 900;
+    white-space: nowrap;
+  }
+
+  .team-triangle-label.a { top: 58px; left: calc(50% + 88px); }
+  .team-triangle-label.b { left: calc(50% - 410px); bottom: 102px; }
+  .team-triangle-label.c { right: calc(50% - 410px); bottom: 102px; }
+
+  .team-triangle-core {
+    position: absolute;
+    z-index: 4;
+    left: 50%;
+    top: 164px;
+    transform: translateX(-50%);
+    color: var(--orange);
+    text-align: center;
+    font-size: 17px;
+    line-height: 1.72;
+    font-weight: 900;
+  }
+
+  .team-triangle-result {
+    position: absolute;
+    z-index: 4;
+    left: 50%;
+    bottom: 12px;
+    transform: translateX(-50%);
+    min-width: 250px;
+    padding: 8px 22px;
+    border-radius: 10px;
+    background: #fff2e9;
+    color: var(--orange);
+    text-align: center;
+    font-size: 17px;
+    line-height: 1.2;
+    font-weight: 900;
+  }
+
+  .team-profile-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 430px;
+    gap: 22px;
+    align-items: center;
+  }
+
+  .team-profile-copy {
+    color: #172033;
+    font-size: 17px;
+    line-height: 1.78;
+    font-weight: 640;
+  }
+
+  .team-profile-card {
+    width: 100%;
+    max-height: 116px;
+    object-fit: contain;
+    justify-self: center;
+  }
+
+  .team-keywords {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .team-keyword-card {
+    min-height: 66px;
+    padding: 10px 16px;
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr);
+    gap: 12px;
+    align-items: center;
+    border: 1px solid #f3dbce;
+    border-radius: 12px;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.94), rgba(255,250,246,.98)),
+      url("design_handoff_page08/backgrounds/background-keyword-card-light.png") center / cover no-repeat;
+  }
+
+  .team-keyword-card img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    filter: drop-shadow(0 8px 12px rgba(255, 90, 0, .13));
+  }
+
+  .team-keyword-card p {
+    margin: 0;
+    color: #172033;
+    font-size: 14px;
+    line-height: 1.45;
+    font-weight: 680;
+  }
+
+  .team-keyword-card strong {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--orange);
+    font-size: 15px;
+    line-height: 1.2;
+    font-weight: 900;
+  }
+
+  .team-quote {
+    margin-top: 12px;
+    min-height: 56px;
+    padding: 10px 34px;
+    display: grid;
+    grid-template-columns: 46px minmax(0, 1fr) 46px;
+    gap: 18px;
+    align-items: center;
+    border: 1px solid #f3dbce;
+    border-radius: 12px;
+    background:
+      linear-gradient(90deg, rgba(255,247,242,.96), rgba(255,253,250,.98)),
+      url("design_handoff_page08/backgrounds/background-quote-strip-light.png") center / cover no-repeat;
+    color: var(--orange);
+    text-align: center;
+    font-size: 18px;
+    line-height: 1.35;
+    font-weight: 900;
+  }
+
+  .team-quote img {
+    width: 34px;
+    height: 34px;
+    object-fit: contain;
+    opacity: .72;
+  }
+
+  .team-quote img:last-child { justify-self: end; }
+
+  .template-canvas {
+    width: min(100%, 1220px);
+    min-height: calc(100vh - 76px);
+    padding-bottom: 34px;
+    overflow: hidden;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 20px 48px rgba(112, 63, 32, .08);
+  }
+
+  .template-banner {
+    position: relative;
+    min-height: 206px;
+    overflow: hidden;
+    border-radius: 16px 16px 0 0;
+    background: var(--orange) url("design_handoff_page10/backgrounds/background-header-orange.png") center / cover no-repeat;
+    box-shadow: 0 14px 28px rgba(255, 83, 0, .14);
+  }
+
+  .template-banner-copy {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: 148px 1px minmax(0, 1fr);
+    align-items: center;
+    gap: 28px;
+    min-height: 206px;
+    padding: 36px 390px 34px 42px;
+    color: #fff;
+  }
+
+  .template-banner-index {
+    font-size: 96px;
+    line-height: .88;
+    font-weight: 900;
+    text-shadow: 0 10px 24px rgba(98, 32, 0, .16);
+  }
+
+  .template-banner-divider {
+    height: 96px;
+    background: rgba(255,255,255,.36);
+  }
+
+  .template-banner h2 {
+    margin: 0;
+    color: #fff;
+    font-size: 52px;
+    line-height: 1.05;
+    font-weight: 900;
+  }
+
+  .template-banner p {
+    margin: 16px 0 0;
+    color: #fff7ef;
+    font-size: 18px;
+    line-height: 1.45;
+    font-weight: 720;
+  }
+
+  .template-hero-art {
+    position: absolute;
+    right: 58px;
+    top: 8px;
+    z-index: 1;
+    width: 250px;
+    height: auto;
+    filter: drop-shadow(0 18px 22px rgba(116, 38, 0, .18));
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+
+  .template-body {
+    position: relative;
+    z-index: 2;
+    padding: 26px 30px 0;
+  }
+
+  .template-module {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 454px;
+    gap: 30px;
+    align-items: center;
+    min-height: 220px;
+    margin-top: 18px;
+    padding: 24px 30px 24px 34px;
+    border: 1px solid rgba(255, 106, 0, .14);
+    border-radius: 16px;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,253,250,.98)),
+      url("design_handoff_page10/backgrounds/background-template-module-card.png") center / cover no-repeat;
+    box-shadow: 0 10px 28px rgba(97, 54, 28, .045);
+  }
+
+  .template-module:first-child { margin-top: 0; }
+
+  .template-main {
+    display: grid;
+    grid-template-columns: 134px minmax(0, 1fr);
+    gap: 22px;
+    align-items: center;
+  }
+
+  .template-left {
+    display: grid;
+    justify-items: center;
+    gap: 22px;
+  }
+
+  .template-no {
+    display: grid;
+    place-items: center;
+    width: 58px;
+    height: 58px;
+    color: #fff;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #ff7f25, #ff4a0b);
+    box-shadow: 0 10px 18px rgba(255, 90, 0, .18);
+    font-size: 26px;
+    line-height: 1;
+    font-weight: 900;
+  }
+
+  .template-icon-ring {
+    display: grid;
+    place-items: center;
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #fff8f2, #ffe9da);
+    border: 1px solid rgba(255, 106, 0, .12);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.85), 0 14px 24px rgba(255, 90, 0, .08);
+  }
+
+  .template-icon-ring img {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    filter: drop-shadow(0 8px 12px rgba(255, 90, 0, .14));
+  }
+
+  .template-copy h3 {
+    margin: 0 0 24px;
+    color: var(--orange);
+    font-size: 27px;
+    line-height: 1.12;
+    font-weight: 900;
+  }
+
+  .template-copy p {
+    margin: 0;
+    color: #172033;
+    font-size: 20px;
+    line-height: 1.9;
+    font-weight: 640;
+  }
+
+  .template-copy mark,
+  .template-example mark,
+  .template-advice strong {
+    color: var(--orange);
+    background: transparent;
+    font-weight: 900;
+  }
+
+  .template-example {
+    min-height: 160px;
+    padding: 22px 28px;
+    border: 1px solid #f3dbce;
+    border-radius: 14px;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.94), rgba(255,250,246,.98)),
+      url("design_handoff_page10/backgrounds/background-example-card-light.png") center / cover no-repeat;
+  }
+
+  .template-example-title {
+    display: inline-flex;
+    align-items: center;
+    min-height: 34px;
+    padding: 0 16px;
+    margin: 0 0 14px;
+    border-radius: 999px;
+    color: var(--orange);
+    background: linear-gradient(180deg, #fff4ec, #fffaf7);
+    font-size: 17px;
+    line-height: 1;
+    font-weight: 900;
+  }
+
+  .template-example p {
+    margin: 0;
+    color: #202a3b;
+    font-size: 16px;
+    line-height: 1.78;
+    font-weight: 620;
+  }
+
+  .template-advice {
+    min-height: 58px;
+    margin-top: 18px;
+    padding: 12px 28px;
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr);
+    gap: 16px;
+    align-items: center;
+    border: 1px solid #f3dbce;
+    border-radius: 12px;
+    background:
+      linear-gradient(90deg, rgba(255,247,242,.96), rgba(255,253,250,.98)),
+      url("design_handoff_page10/backgrounds/background-advice-strip-light.png") center / cover no-repeat;
+    color: #172033;
+    font-size: 16px;
+    line-height: 1.45;
+    font-weight: 650;
+  }
+
+  .template-advice img {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+    filter: drop-shadow(0 8px 12px rgba(255, 90, 0, .13));
+  }
+
+  .closing-callout {
+    min-height: 94px;
+    padding: 18px 42px;
+    display: grid;
+    grid-template-columns: 92px minmax(0, 1fr);
+    gap: 22px;
+    align-items: center;
+    background:
+      linear-gradient(90deg, rgba(255,240,232,.92), rgba(255,250,246,.98)),
+      url("handoff_work_06/backgrounds/background-callout-strip.png") center / cover no-repeat;
+  }
+
+  .closing-callout img {
+    width: 72px;
+    height: 60px;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 16px rgba(255, 90, 0, .14));
+  }
+
+  .closing-callout h4 {
+    margin: 0 0 8px;
+    color: var(--orange);
+    text-align: center;
+    font-size: 20px;
+    line-height: 1.35;
+    font-weight: 900;
+    letter-spacing: .04em;
+  }
+
+  .closing-callout p {
+    margin: 0;
+    color: #202a3b;
+    text-align: center;
+    font-size: 15px;
+    line-height: 1.48;
+    font-weight: 610;
+  }
+
+  @media (max-width: 1360px) {
+    body { min-width: 1120px; }
+    .home-title h1 { font-size: 70px; }
+    .hero-book { max-width: 54%; }
+    .ability-card { min-width: 184px; padding: 15px 17px; }
+    .compare-panel,
+    .compare-panel.reverse { grid-template-columns: 150px minmax(0, 1fr); }
+    .compare-panel.reverse img { order: -1; }
+    .compare-panel img { width: 150px; height: 112px; }
+  }
+</style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand" aria-label="中膳集团 Logo">
+        <img src="assets/zonshon-fullcolor-logo-100.jpg" alt="中膳集团 CATESUN GROUP">
+      </div>
+
+      <section class="nav-card">
+        <h1 class="nav-title">方案撰写指南 2026</h1>
+        <nav class="nav-list" aria-label="章节导航">
+          <button class="nav-item" type="button" data-page="home"><svg viewBox="0 0 24 24"><path d="M4 11 12 4l8 7v9H5v-9Z"></path><path d="M9 20v-6h6v6"></path></svg><span>首页封面</span></button>
+          <button class="nav-item" type="button" data-page="essence"><svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Zm-7 9v-2a5 5 0 0 1 5-5h4a5 5 0 0 1 5 5v2Z"></path></svg><span>一、方案的本质</span></button>
+          <button class="nav-item" type="button" data-page="customer"><svg viewBox="0 0 24 24"><path d="M5 4h10a4 4 0 0 1 4 4v12l-4-2H5Zm4 5h6M9 13h4"></path></svg><span>二、动笔之前：搞清楚客户</span></button>
+          <button class="nav-item active" type="button" data-page="structure"><svg viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5Zm-7 9 7 4 7-4M5 16l7 4 7-4"></path></svg><span>三、整体结构：三道门理论</span></button>
+          <button class="nav-item" type="button" data-page="writing"><svg viewBox="0 0 24 24"><path d="M5 4h14v16H5Zm4 5h6M9 13h6M9 17h4"></path></svg><span>四、每一页怎么写</span></button>
+          <button class="nav-item" type="button" data-page="language"><svg viewBox="0 0 24 24"><path d="M12 3 4 7v6c0 4 3 7 8 8 5-1 8-4 8-8V7Zm0 6v5m0 3h.01"></path></svg><span>五、语言风格</span></button>
+          <button class="nav-item" type="button" data-page="transition"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l4 2"></path></svg><span>六、过渡页与结尾</span></button>
+          <button class="nav-item" type="button" data-page="layout"><svg viewBox="0 0 24 24"><path d="M4 4h6v6H4Zm10 0h6v6h-6ZM4 14h6v6H4Zm10 0h6v6h-6Z"></path></svg><span>七、排版规则</span></button>
+          <button class="nav-item" type="button" data-page="team"><svg viewBox="0 0 24 24"><path d="M8 21v-2a4 4 0 0 1 4-4h0a4 4 0 0 1 4 4v2M12 11a4 4 0 1 0-4-4 4 4 0 0 0 4 4Zm6 5a3 3 0 0 1 3 3v2M18 11a3 3 0 1 0-2-5.2"></path></svg><span>八、团队介绍</span></button>
+          <button class="nav-item" type="button" data-page="taboo"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="m8 8 8 8m0-8-8 8"></path></svg><span>九、写作禁忌</span></button>
+          <button class="nav-item" type="button" data-page="template"><svg viewBox="0 0 24 24"><path d="M12 3 8 8l4 13 4-13Zm-7 7 3-2 4 13Zm14 0-3-2-4 13"></path></svg><span>十、常用语言模板</span></button>
+          <button class="nav-item" type="button" data-page="checklist"><svg viewBox="0 0 24 24"><path d="M7 3h10v3h2v15H5V6h2Zm2 9 2 2 4-5M9 17h6"></path></svg><span>十一、方案自检清单</span></button>
+        </nav>
+      </section>
+
+      <section class="audience-card">
+        <h2>适用对象</h2>
+        <p>所有参与方案撰写的同事<br>不限年资</p>
+        <img src="assets/page2-audience-icon.png" alt="">
+      </section>
+      <div class="page-no" id="pageNo">03</div>
+    </aside>
+
+    <main class="content">
+      <section class="page" id="home" aria-label="首页封面">
+        <div class="canvas home-canvas">
+          <div class="home-bg-frame" aria-hidden="true">
+            <img class="home-bg-art" src="assets/guide2026/home-visual-background-page3.png" alt="">
+          </div>
+          <div class="training-badge">中膳内部培训文件</div>
+          <header class="home-title">
+            <h1>方案撰写指南 <span>2026</span></h1>
+            <p>让方案成为甲方决策的最优选项</p>
+            <div class="keywords">懂客户 · 讲策略 · 有温度 · 可落地 · 能验证</div>
+          </header>
+
+          <section class="hero-visual" aria-label="核心能力">
+            <img class="hero-book" src="assets/guide-hero-visual.png" alt="橙色立体书本，封面写有方案指南">
+            <article class="ability-card ability-client">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="7" r="5"></circle><path d="M3 22a9 9 0 0 1 18 0"></path></svg>
+              <div><strong>懂客户</strong><span>精准洞察需求</span></div>
+            </article>
+            <article class="ability-card ability-strategy">
+              <img src="assets/page2-value-logic.png" alt="">
+              <div><strong>讲策略</strong><span>结构清晰有力</span></div>
+            </article>
+            <article class="ability-card ability-warm">
+              <svg viewBox="0 0 24 24"><path d="M12 21s-8-4.7-8-11a5 5 0 0 1 8-4 5 5 0 0 1 8 4c0 6.3-8 11-8 11Z"></path></svg>
+              <div><strong>有温度</strong><span>传递关怀体验</span></div>
+            </article>
+            <article class="ability-card ability-ground">
+              <img src="design_handoff/package/icons/icon-checklist-clipboard.png" alt="">
+              <div><strong>可落地</strong><span>方法可执行</span></div>
+            </article>
+            <article class="ability-card ability-verify">
+              <img src="assets/page2-value-preview.png" alt="">
+              <div><strong>能验证</strong><span>机制保障效果支撑</span></div>
+            </article>
+          </section>
+
+          <section class="metrics" aria-label="业务数据" style="width: 1096px; height: 95px; transform: translate(0px, 79px);">
+            <div class="metric"><img src="assets/guide2026/original-icons/stat-building-alpha.png" alt=""><div><strong>1500<small>+</small></strong><span>项目食堂覆盖</span></div></div>
+            <div class="metric"><img src="assets/guide2026/original-icons/stat-people-alpha.png" alt=""><div><strong>800<small>万+</small></strong><span>日均服务人次</span></div></div>
+            <div class="metric"><img src="assets/guide2026/original-icons/stat-shield-alpha.png" alt=""><div><strong>98.6<small>%</small></strong><span>验收合格率</span></div></div>
+            <div class="metric"><img src="assets/guide2026/original-icons/stat-medal-alpha.png" alt=""><div style="width: 76px; height: 67.875px;"><strong style="transform: translate(0px, 10px);">0</strong><span style="width: 76px; height: 30px; transform: translate(0px, 5px);">重大食安事故<br>（连续多年）</span></div></div>
+            <div class="metric"><img src="assets/guide2026/original-icons/stat-diamond-alpha.png" alt=""><div><strong>336<small>项</small></strong><span>开业检查清单</span></div></div>
+          </section>
+
+          <aside class="home-quote" style="width: 1096px; height: 82px; transform: translate(0px, 87px);">我们替甲方做一次决策预演：先帮他想清楚，再帮他做到位，最后帮他持续变好。</aside>
+        </div>
+      </section>
+
+      <section class="page" id="essence" aria-label="章节 01 方案的本质">
+        <div class="canvas slide-canvas">
+          <header class="banner essence-banner">
+            <div class="banner-copy">
+              <div class="banner-index">01</div>
+              <div class="banner-divider" aria-hidden="true"></div>
+              <div>
+                <h2>方案的本质</h2>
+                <p>方案不是“交作业”，是你替甲方做一次决策预演。</p>
+              </div>
+            </div>
+            <img class="banner-asset" src="assets/page2-hero-bg.png" alt="橙白色靶心与飞镖 3D 图标">
+          </header>
+
+          <div class="section-body">
+            <section class="question-card" aria-label="甲方看方案的两个问题">
+              <h3>甲方看方案，心里只有两个问题：</h3>
+              <div class="q-line">
+                <span class="q-no">01</span>
+                <span class="q-text">你懂不懂我的情况？</span>
+              </div>
+              <div class="q-line">
+                <span class="q-no">02</span>
+                <span class="q-text">你能不能解决我的问题？</span>
+              </div>
+              <p class="answer">这两个问题答好了，方案就成了。</p>
+              <img class="question-visual" src="assets/page2-question-visual.png" alt="橙白对话气泡 3D 图标">
+            </section>
+
+            <h3 class="section-title">方案的 <span>核心价值</span></h3>
+            <section class="value-grid" aria-label="方案核心价值">
+              <article class="value-card">
+                <img src="assets/page2-value-preview.png" alt="">
+                <h3>替甲方做决策预演</h3>
+                <p>提前识别风险与机会，把不确定变成可判断。</p>
+              </article>
+              <article class="value-card">
+                <img src="assets/page2-value-logic.png" alt="">
+                <h3>传递清晰决策依据</h3>
+                <p>结构清晰、逻辑严谨，让决策有据可依。</p>
+              </article>
+              <article class="value-card">
+                <img src="assets/page2-value-risk.png" alt="">
+                <h3>降低决策风险成本</h3>
+                <p>预见问题、提出方案，减少试错与损失。</p>
+              </article>
+              <article class="value-card">
+                <img src="assets/page2-value-trust.png" alt="">
+                <h3>建立长期信任关系</h3>
+                <p>专业、可靠、可交付，赢得长期合作机会。</p>
+              </article>
+            </section>
+
+            <aside class="quote-card">我们的目标，是让甲方翻完方案后，心里有底、眼里有光、手里有方向。</aside>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="customer" aria-label="章节 02 动笔之前搞清楚客户">
+        <div class="canvas long-canvas">
+          <header class="banner">
+            <div class="banner-copy">
+              <div class="banner-index">02</div>
+              <div class="banner-divider" aria-hidden="true"></div>
+              <div>
+                <h2>动笔之前：搞清楚客户是谁</h2>
+                <p>不同客户的核心关切和方案侧重点完全不同，搞错了客户类型，方案从第一页就走偏了。</p>
+              </div>
+            </div>
+            <img class="banner-asset" src="design_handoff/package/icons/illust-customer-search.png" alt="放大镜人物 3D 图标">
+          </header>
+
+          <div class="section-body">
+            <section aria-label="六类客户速查">
+              <div class="chapter-title">
+                <span class="num">2.1</span>
+                <div>
+                  <h3>六类客户速查</h3>
+                  <p>不同客户的核心关切和方案侧重点完全不同</p>
+                </div>
+              </div>
+
+              <table class="customer-table">
+                <thead>
+                  <tr>
+                    <th>客户类型</th>
+                    <th>关键决策人</th>
+                    <th>核心关切（排序）</th>
+                    <th>方案侧重点</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="type-cell"><img src="design_handoff/package/icons/icon-school-home.png" alt="">中小学 / 幼儿园</span></td>
+                    <td>校长、家委会</td>
+                    <td>食安 ＞ 营养 ＞ 口味</td>
+                    <td>安全背书、营养可视化、家校共管机制</td>
+                  </tr>
+                  <tr>
+                    <td><span class="type-cell"><img src="design_handoff/package/icons/icon-graduation-cap.png" alt="">高校 / 大学</span></td>
+                    <td>后勤处长、学生会</td>
+                    <td>食安 ＞ 风味多样 ＞ 性价比</td>
+                    <td>风味档口集群、智慧结算、场景活动联动</td>
+                  </tr>
+                  <tr>
+                    <td><span class="type-cell"><img src="design_handoff/package/icons/icon-office-building.png" alt="">大型企业 / 写字楼</span></td>
+                    <td>行政总监、工会</td>
+                    <td>员工满意度 ＞ 就餐效率</td>
+                    <td>多样风味、高周台率、数字化体验</td>
+                  </tr>
+                  <tr>
+                    <td><span class="type-cell"><img src="design_handoff/package/icons/icon-government-columns.png" alt="">政府机关 / 事业单位</span></td>
+                    <td>机关事务局</td>
+                    <td>合规 ＞ 廉政风险 ＞ 稳定</td>
+                    <td>厉行节约、规范透明、接待有据</td>
+                  </tr>
+                  <tr>
+                    <td><span class="type-cell"><img src="design_handoff/package/icons/icon-hospital-cross.png" alt="">医院</span></td>
+                    <td>后勤院长、营养科</td>
+                    <td>患者特需 ＞ 医护保障</td>
+                    <td>治疗膳食、全天候供餐、病区运营</td>
+                  </tr>
+                  <tr>
+                    <td><span class="type-cell"><img src="design_handoff/package/icons/icon-industrial-park.png" alt="">产业园区 / 基建工厂</span></td>
+                    <td>行政经理</td>
+                    <td>性价比 ＞ 抗饿 ＞ 效率</td>
+                    <td>大份量套餐、加班餐保障、快速出餐</td>
+                  </tr>
+                </tbody>
+              </table>
+            </section>
+
+            <aside class="note-strip">
+              <img src="design_handoff/package/icons/icon-reminder-lightbulb.png" alt="">
+              <span><strong>关键提醒</strong>六类是起点，不是终点。同类客户中差异很大，必须结合具体项目特性、人群构成、场景特点来定制方案。</span>
+            </aside>
+
+            <section aria-label="同类客户差别">
+              <div class="chapter-title">
+                <span class="num">2.2</span>
+                <div>
+                  <h3>同类客户里也有差别，别套模板</h3>
+                  <p>六类是起点，不是终点。具体方案要根据客户属性、人群构成、场景特点来定。</p>
+                </div>
+              </div>
+
+              <div class="compare-set">
+                <div class="compare-label">同样是“高校”</div>
+                <div class="compare-row">
+                  <article class="compare-panel">
+                    <img src="assets/guide2026/scene-emba-lounge.png" alt="EMBA 学院餐饮休闲场景">
+                    <div>
+                      <h4>青年经营学院（EMBA）</h4>
+                      <p>学员以企业家、高管为主，他们的参照物是高端餐厅。</p>
+                      <b>方案要突出：</b>
+                      <ul><li>商务社交</li><li>主题定制</li><li>轻奢体验感</li></ul>
+                    </div>
+                  </article>
+                  <div class="vs">VS</div>
+                  <article class="compare-panel reverse">
+                    <div>
+                      <h4>某艺术大学美术学院</h4>
+                      <p>学生更年轻、更感性，在意氛围和性价比。</p>
+                      <b>方案要突出：</b>
+                      <ul><li>创意风格</li><li>特色小馆感</li><li>学生能消费得起</li></ul>
+                    </div>
+                    <img src="assets/guide2026/scene-art-campus.png" alt="艺术学院餐饮空间">
+                  </article>
+                </div>
+              </div>
+
+              <div class="compare-set green">
+                <div class="compare-label">同样是“政府机关”</div>
+                <div class="compare-row">
+                  <article class="compare-panel">
+                    <img src="assets/guide2026/scene-commerce-bureau.png" alt="城市商务局办公楼">
+                    <div>
+                      <h4>广州商务局</h4>
+                      <p>接待频率高，注重效率和形象。</p>
+                      <b>方案要点：</b>
+                      <ul><li>简餐门设计接待菜单</li><li>接待流程完善</li></ul>
+                    </div>
+                  </article>
+                  <div class="vs">VS</div>
+                  <article class="compare-panel reverse">
+                    <div>
+                      <h4>某县级单位</h4>
+                      <p>几乎没有接待需求，更看重规范合规。</p>
+                      <b>方案要点：</b>
+                      <ul><li>无照接待设计</li><li>聚焦日常供餐和合规管理</li></ul>
+                    </div>
+                    <img src="assets/guide2026/scene-county-office.png" alt="县级单位办公楼">
+                  </article>
+                </div>
+              </div>
+            </section>
+
+            <aside class="conclusion-strip">
+              <img src="design_handoff/package/icons/icon-conclusion-target.png" alt="">
+              <span><strong>结论</strong>客户类型是判断方向的框架，具体方案还要根据这个客户的属性、人群构成、场景特点来定。动笔之前，先把下面三个问题搞清楚。</span>
+            </aside>
+
+            <section aria-label="三个必须搞清楚的问题">
+              <div class="chapter-title">
+                <span class="num">2.3</span>
+                <div><h3>三个必须搞清楚的问题</h3></div>
+              </div>
+
+              <div class="question-stack">
+                <article class="question-block">
+                  <div class="question-block-head"><span class="round-no">01</span>问题一：这个项目的具体情况是什么？</div>
+                  <img class="block-icon" src="design_handoff/package/icons/icon-clipboard-checklist.png" alt="">
+                  <div class="question-cols">
+                    <div class="q-col"><h5>就餐规模、餐标范围、供餐时段</h5><ul><li>日均就餐人数</li><li>餐标区间</li><li>供餐时段安排</li></ul></div>
+                    <div class="q-col"><h5>现有食堂情况</h5><ul><li>有无供应商 / 合作模式</li><li>过往投诉情况</li><li>硬件条件</li></ul></div>
+                    <div class="q-col"><h5>是否有接待需求</h5><ul><li>接待频率与规格要求</li><li>接待流程</li><li>接待场景</li></ul></div>
+                    <div class="q-col"><h5>特殊饮食需求</h5><ul><li>特殊饮食</li><li>特殊人群</li></ul></div>
+                  </div>
+                </article>
+
+                <article class="question-block blue">
+                  <div class="question-block-head"><span class="round-no">02</span>问题二：谁是真正的决策人？他最头疼的是什么？</div>
+                  <img class="block-icon" src="design_handoff/package/icons/icon-decision-makers.png" alt="">
+                  <div class="question-cols">
+                    <div class="q-col"><h5>决策人是谁？</h5><ul><li>后勤主任？分管副院长？</li><li>行政总监？工会主席？</li><li>还是其他关键角色？</li></ul></div>
+                    <div class="q-col"><h5>他最头疼的是什么？</h5><ul><li>食安事故？员工投诉？</li><li>成本压力？效率问题？</li><li>服务体验？合规风险？</li></ul></div>
+                    <div class="q-col"><h5>他过去在这件事上吃过什么亏？</h5><ul><li>食堂事故导致的问责？</li><li>供应商服务不稳定？</li><li>成本超支或预算失控？</li></ul></div>
+                  </div>
+                </article>
+
+                <article class="question-block green">
+                  <div class="question-block-head"><span class="round-no">03</span>问题三：我们的差异化在哪里？</div>
+                  <img class="block-icon" src="design_handoff/package/icons/icon-conclusion-target.png" alt="">
+                  <div class="question-cols">
+                    <div class="q-col"><p>这是最容易答错的一个问题。很多人的第一反应是列出食品安全措施，但这个答案在今天的市场已经失效了。</p></div>
+                    <div class="q-col"><h5>不仅是食品安全</h5><p>安全是底线，不是差异化。</p></div>
+                    <div class="q-col"><h5>差异化从价值出发</h5><p>从客户痛点出发，提供独特价值。</p></div>
+                    <div class="q-col"><h5>差异化要可感知</h5><p>让客户看得见、摸得着、感受得到。</p></div>
+                    <div class="q-col"><h5>差异化能被验证</h5><p>用数据、案例、口碑证明我们的不同。</p></div>
+                  </div>
+                </article>
+              </div>
+            </section>
+
+            <aside class="quote-card">方案不是“自我介绍”，而是“解决甲方的问题”。先理解，再表达；先洞察，再落笔。</aside>
+          </div>
+        </div>
+      </section>
+
+      <section class="page active" id="structure" aria-label="章节 03 方案的整体结构">
+        <div class="canvas structure-canvas">
+          <header class="banner structure-banner">
+            <div class="banner-copy">
+              <div class="banner-index">03</div>
+              <div>
+                <h2>方案的整体结构：三道门理论</h2>
+                <p>甲方在看方案时，心里有三道门，必须按顺序打开。</p>
+              </div>
+              <div class="door-visual" aria-hidden="true">
+                <img src="design_handoff_03/icons/batch-01/illust-three-doors.png" alt="">
+              </div>
+            </div>
+          </header>
+
+          <div class="structure-body">
+            <section class="door-flow" aria-label="三道门">
+              <article class="door-card">
+                <div class="door-icon"><img src="design_handoff_03/icons/batch-01/icon-shield-check.png" alt=""></div>
+                <div>
+                  <small>第一道门</small>
+                  <h3>放不放心</h3>
+                  <p>食安机制够不够硬？出了问题谁负责？</p>
+                </div>
+              </article>
+              <article class="door-card">
+                <div class="door-icon"><img src="design_handoff_03/icons/batch-01/icon-heart.png" alt=""></div>
+                <div>
+                  <small>第二道门</small>
+                  <h3>喜不喜欢</h3>
+                  <p>员工愿不愿意来吃？有没有吸引力？</p>
+                </div>
+              </article>
+              <article class="door-card blue">
+                <div class="door-icon"><img src="design_handoff_03/icons/batch-01/icon-clipboard-list.png" alt=""></div>
+                <div>
+                  <small>第三道门</small>
+                  <h3>怎么做到</h3>
+                  <p>产品、运营、服务的具体方案是什么？</p>
+                </div>
+              </article>
+            </section>
+
+            <aside class="alert-strip" style="width: 1164px; height: 104px;">
+              <img class="section-icon" src="design_handoff_03/icons/batch-01/icon-warning-triangle.png" alt="">
+              <div style="width: 1027px; height: 44.1953px; transform: translate(35px, 0px);">
+                <strong>最常见的错误顺序：公司介绍 → 方案内容 → 食品安全</strong>
+                <span>这样的结构的问题是：客户还没放心，你就开始介绍自己有多厉害，他根本听不进去。</span>
+              </div>
+            </aside>
+
+            <section style="width: 1164px; height: 480.094px; transform: translate(0px, -2px);">
+              <div class="chapter-title">
+                <span class="num">3.1</span>
+                <div><h3>政府机关 / 事业单位 · 标准章节结构</h3></div>
+              </div>
+              <table class="rhythm-table">
+                <thead>
+                  <tr><th>章节</th><th>内容定位</th><th>核心任务</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td><span class="chapter-cell"><img src="design_handoff_03/icons/batch-03/icon-food-safety-shield.png" alt="">前言</span></td><td>主动点出甲方三大顾虑，逐一给出机制性回应</td><td>建立信任，先放心再心动</td></tr>
+                  <tr><td><span class="chapter-cell"><img src="design_handoff_03/icons/batch-03/icon-target-crosshair.png" alt="">第一章　整体规划思路</span></td><td>我们怎么理解这个项目，核心判断是什么</td><td>展示深度理解，不是堆内容量</td></tr>
+                  <tr><td><span class="chapter-cell"><img src="design_handoff_03/icons/batch-03/icon-chef-hat.png" alt="">第二章　出品体验升级</span></td><td>吃什么、怎么选、如何保持稳定</td><td>菜品结构 + 产品线逻辑</td></tr>
+                  <tr><td><span class="chapter-cell"><img src="design_handoff_03/icons/batch-03/icon-operations-chart.png" alt="">第三章　服务运营升级</span></td><td>标准出品、健康关怀、反馈闭环</td><td>机制性内容，让甲方感到“可管理”</td></tr>
+                  <tr><td><span class="chapter-cell"><img src="design_handoff_03/icons/batch-03/icon-service-gift.png" alt="">第四章　增值服务</span></td><td>从一日三餐延伸到日常便利</td><td>超出预期的价值点</td></tr>
+                  <tr><td><span class="chapter-cell"><img src="design_handoff_03/icons/batch-03/icon-location-pin.png" alt="">第五章　环境升级</span></td><td>识别、秩序、温度</td><td>看得见、摸得着的改变</td></tr>
+                  <tr><td><span class="chapter-cell"><img src="design_handoff_03/icons/batch-03/icon-report-chart.png" alt="">第六章　总结</span></td><td>升级对照表 + 共同愿景</td><td>留下整体印象，开放后续对话</td></tr>
+                </tbody>
+              </table>
+            </section><section style="width: 1164px; height: 299.352px;">
+              <div class="chapter-title">
+                <span class="num">3.2</span>
+                <div><h3>其他客户类型的章节重点</h3></div>
+              </div>
+              <div class="type-focus-grid">
+                <article class="focus-card">
+                  <h4><img src="design_handoff_03/icons/batch-02/icon-university-cap.png" alt="">高校</h4>
+                  <p>先与学院文化对齐，再展示服务能力。</p>
+                  <ul><li>体现人群分层</li><li>产品用“系列”替代产品线</li><li>语言现代化、国际化</li></ul>
+                </article>
+                <article class="focus-card">
+                  <h4><img src="design_handoff_03/icons/batch-02/icon-corporate-building.png" alt="">企业 / 写字楼</h4>
+                  <p>核心是效率与多样性并重。</p>
+                  <ul style="transform: translate(0px, 20px);"><li><b>智慧结算</b></li><li><b>快速分流方案</b></li><li><b>满意度数据采集体系</b></li></ul>
+                </article>
+                <article class="focus-card">
+                  <h4><img src="design_handoff_03/icons/batch-02/icon-school-building.png" alt="">中小学</h4>
+                  <p>食安是压倒一切的权重。</p>
+                  <ul style="transform: translate(0px, 18px);"><li>前言重点显示溯源机制</li><li>营养标注</li><li>家长可见的透明体系</li></ul>
+                </article>
+                <article class="focus-card">
+                  <h4><img src="design_handoff_03/icons/batch-02/icon-hospital-cross.png" alt="">医院</h4>
+                  <p>普通供餐和治疗膳食分开写。</p>
+                  <ul style="transform: translate(0px, 17px);"><li>病区送餐流程</li><li>HIS 系统对接能力</li><li>营养膳食管理</li></ul>
+                </article>
+                <article class="focus-card">
+                  <h4><img src="design_handoff_03/icons/batch-02/icon-industrial-park-purple.png" alt="">产业园区</h4>
+                  <p>简洁直接。</p>
+                  <ul style="transform: translate(0px, 17px);"><li>套餐定价结构</li><li>高峰出餐速度</li><li>加班餐保障方案</li></ul>
+                </article>
+              </div>
+            </section>
+
+            
+
+            <section>
+              <div class="chapter-title">
+                <span class="num">3.3</span>
+                <div>
+                  <h3>先建立一个认知框架：不是所有功能都能拉开差距</h3>
+                  <p>产品管理里有一个经典工具叫卡诺模型（Kano Model），它把产品功能分成三层：</p>
+                </div>
+              </div>
+              <div class="kano-block">
+                <div class="pyramid" aria-hidden="true">
+                  <div class="pyramid-level"><img src="design_handoff_03/icons/batch-02/icon-trophy.png" alt=""></div>
+                  <div class="pyramid-level"><img src="design_handoff_03/icons/batch-02/icon-growth-chart.png" alt=""></div>
+                  <div class="pyramid-level"><img src="design_handoff_03/icons/batch-02/icon-diamond.png" alt=""></div>
+                </div>
+                <div class="kano-lines">
+                  <article class="kano-line">
+                    <div><h4>第一层 · 基本层（门槛功能）</h4><p>你做好了，客户不会额外加分；你做差了，客户会直接淘汰你。</p></div>
+                    <span style="transform: translate(67px, 4px);">在今天的团餐市场，食品安全就在这一层。</span>
+                  </article>
+                  <article class="kano-line">
+                    <div><h4>第二层 · 期望层（线性功能）</h4><p>做得越好，客户越满意；做得越差，客户越失望。</p></div>
+                    <span style="transform: translate(67px, 4px);">菜品质量、出品稳定性、服务响应速度都在这一层。</span>
+                  </article>
+                  <article class="kano-line">
+                    <div><h4>第三层 · 魅力层（惊喜功能）</h4><p>客户没想到你会提供，但看到之后眼前一亮。</p></div>
+                    <span style="transform: translate(67px, 4px);">有创意的增值服务、个性化的场景设计都在这一层。</span>
+                  </article>
+                </div>
+              </div>
+              <div class="principle-strip">结论：方案里用来“赢得客户”的内容，一定是第二层和第三层，而不是第一层。</div>
+            </section>
+
+            <section class="safety-block">
+              <div class="safety-head">
+                <img src="design_handoff_03/icons/batch-03/icon-food-safety-shield.png" alt="">
+                <div>
+                  <h3>食品安全：是入场券，不是差异化</h3>
+                  <p>在今天，食安是所有团餐公司都必须通过的标准。方案提供食安策略时，要讲清楚机制与责任，但不要把它当成唯一卖点。</p>
+                </div>
+              </div>
+              <div class="safety-grid">
+                <article class="safety-item"><img src="design_handoff_03/icons/batch-03/icon-food-safety-shield.png" alt=""><h4>食安放在前言</h4><p>用机制和数字快速建立信任。</p></article>
+                <article class="safety-item"><img src="design_handoff_03/icons/batch-03/icon-report-chart.png" alt=""><h4>让甲方放心</h4><p>先回应风险，再展开体验。</p></article>
+                <article class="safety-item"><img src="design_handoff_03/icons/batch-03/icon-target-crosshair.png" alt=""><h4>把中后段篇幅留给差距</h4><p>真正拉开距离的是服务与运营。</p></article>
+                <article class="safety-item"><img src="design_handoff_03/icons/batch-03/icon-clipboard-checklist.png" alt=""><h4>食安过第一道门</h4><p>不是为了拉开差距。</p></article>
+              </div>
+              <div class="principle-strip">写法原则：食安放在前言，用机制和数字快速建立信任，让甲方放心，然后翻篇。</div>
+            </section>
+
+            <section class="diff-block">
+              <h3>真正的差距 - 1：菜单设计</h3>
+              <p>菜单本身容易被抄，但菜单背后的“这个客户”的深层理解，无法复制。</p>
+              <div class="diff-grid">
+                <article class="diff-panel">
+                  <span class="tag">01 人群构成决定菜品结构</span>
+                  <h4 style="width: 328px; height: 51px;">同样叫“自选档口”，不同人群构成的单位，配比应该完全不同。</h4>
+                  <ul><li>年轻员工为主：互联网公司、园区档口</li><li>中年干部为主：家常菜和低油低盐</li><li>基建工厂：主食份量足、价格敏感</li></ul>
+                </article>
+                <article class="diff-panel">
+                  <span class="tag">02 在地性决定菜品内容</span>
+                  <h4 style="width: 328px; height: 51px;">不同城市、不同单位，对口味和品类有天然偏好。</h4>
+                  <ul><li>广州单位：老火汤和肠粉</li><li>成都单位：小炒与冒菜</li><li>沿海城市单位：海鲜和蒸菜接受度更高</li></ul>
+                </article>
+                <article class="diff-panel">
+                  <span class="tag">03 节奏感决定员工粘性</span>
+                  <h4 style="width: 328px; height: 45px;">菜品轮换机制不是“勤换”，而是在建立一种期待感。</h4>
+                  <ul><li>日轮换：基础菜保持稳定</li><li>周轮换：同一品类内部变化</li><li>季轮换：跟随节气和地方风味</li><li>特别节点：节日餐、主题餐</li></ul>
+                </article>
+              </div>
+            </section>
+
+            <section class="diff-block">
+              <h3>真正的差距 - 2：增值服务（魅力层）</h3>
+              <p>增值服务是方案的“魅力层”。一旦方案想到你会想、但看到会眼前一亮，就容易形成加分。</p>
+              <div class="service-grid">
+                <article class="service-card"><img src="design_handoff_03/icons/batch-03/icon-time-clock.png" alt=""><h4>A. 时间延伸</h4><ul><li>便利外带、预处理菜</li><li>夜宵 / 加班餐</li><li>早餐快取</li></ul></article>
+                <article class="service-card"><img src="design_handoff_03/icons/batch-03/icon-dormitory-bed.png" alt=""><h4>B. 场景延伸</h4><ul><li>会议茶歇</li><li>员工生日会</li><li>节日主题布置</li></ul></article>
+                <article class="service-card"><img src="design_handoff_03/icons/batch-03/icon-chef-hat.png" alt=""><h4>C. 内容延伸</h4><ul><li>月度主题活动</li><li>健康讲座</li><li>员工轻食方案</li></ul></article>
+                <article class="service-card"><img src="design_handoff_03/icons/batch-03/icon-operations-chart.png" alt=""><h4>D. 管理延伸</h4><ul><li>满意度月报</li><li>投诉响应机制</li><li>服务看板和复盘</li></ul></article>
+              </div>
+              <div class="principle-strip">选哪些写进方案？不要全写。针对这个客户最真实的痛点，选 2-3 个最有针对性的增值服务。</div>
+            </section>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="writing" aria-label="章节 04 每一页怎么写">
+        <div class="canvas writing-canvas">
+          <header class="writing-banner">
+            <div class="writing-banner-copy">
+              <div class="writing-banner-index">04</div>
+              <div class="writing-banner-divider" aria-hidden="true"></div>
+              <div>
+                <h2>每一页怎么写</h2>
+                <p>让客户一页看懂重点，锁定问题，认同方案，看到价值。</p>
+              </div>
+            </div>
+            <img class="writing-hero-art" src="design_handoff_page04/illustrations/illustration-clipboard-pencil.png" alt="清单与铅笔 3D 插画">
+          </header>
+
+          <div class="writing-body">
+            <section class="writing-section" aria-label="每页的标准四步法">
+              <div class="writing-title"><span class="num">4.1</span><h3>每页的标准四步法</h3></div>
+              <p class="writing-lead"><span style="font-weight: normal;">不管讲什么内容，每一页最好都遵循这个逻辑顺序：</span></p>
+              <div class="standard-flow">
+                <article class="standard-step">
+                  <span class="step-dot">01</span>
+                  <strong>发现了什么问题</strong>
+                  <span><div ksdocclipboard="ksDocClipboardId:'{afc14f96-c76d-7ab2-944a-7d8ced2b6045-0}';from:'outline';priorityFormat:'';mimetypes:'text/html;text/plain';dataType:'';srcRange:'';ext:'e30='"><div finger="kso-wps-otl" source="528010458879" userdata="eyJvcGVuU3RhcnQiOjEsIm9wZW5FbmQiOjEsImxpc3REYXRhcyI6e319">观察视角<div>不用批评语气</div></div></div></span>
+                  <img src="design_handoff_page04/icons/icon-find-problem.png" alt="">
+                </article>
+                <span class="standard-arrow" aria-hidden="true"></span>
+                <article class="standard-step">
+                  <span class="step-dot">02</span>
+                  <strong>为什么会有这个问题</strong>
+                  <span>说清楚根因</span>
+                  <img src="design_handoff_page04/icons/icon-question-circle.png" alt="">
+                </article>
+                <span class="standard-arrow" aria-hidden="true"></span>
+                <article class="standard-step">
+                  <span class="step-dot">03</span>
+                  <strong>我们的解决方案</strong>
+                  <span>具体动作<br>不是口号</span>
+                  <img src="design_handoff_page04/icons/icon-checklist.png" alt="">
+                </article>
+                <span class="standard-arrow" aria-hidden="true"></span>
+                <article class="standard-step">
+                  <span class="step-dot">04</span>
+                  <strong>这样做的好处</strong>
+                  <span>对甲方和用餐者<br>各有什么价值</span>
+                  <img src="design_handoff_page04/icons/icon-growth-chart.png" alt="">
+                </article>
+              </div>
+              <aside class="writing-callout">
+                <img src="design_handoff_page04/illustrations/illustration-tip-lightbulb.png" alt="">
+                <span>这个顺序让客户看到：你找到了真实的问题，方案是针对这个问题设计的。</span>
+              </aside>
+            </section>
+
+            <section class="writing-section" aria-label="四种常用页面类型">
+              <div class="writing-title"><span class="num">4.2</span><h3>四种常用页面类型</h3></div>
+              <p class="writing-lead"><span style="font-weight: normal;">根据内容性质，套用对应类型，不需要每页从零设计：</span></p>
+              <div class="type-list">
+                <div>
+                  <div class="type-row">
+                    <aside class="type-side">
+                      <h4>类型一<br>痛点-回应型</h4>
+                      <p>适合：增值服务、运营机制、环境改造等章节</p>
+                      <img src="design_handoff_page04/icons/icon-chat-response.png" alt="">
+                    </aside>
+                    <div class="type-flow">
+                      <div class="flow-stack" style="width: 478.195px; height: 151.594px;">
+                        <div class="flow-box"><span class="flow-chip">痛点编号</span><span>用口语描述真实痛点，说出背后的影响，不只是表面现象</span></div>
+                        <div class="flow-down" aria-hidden="true"></div>
+                        <div class="flow-box" style=""><span class="flow-chip">我们的回应</span><span><b>服务动作名称</b><br>具体怎么做 / 解决什么</span></div>
+                      </div>
+                    </div>
+                    <div class="type-example" style="transform: translate(-5px, 0px);">
+                      <span class="example-tag">示例：痛点 01</span>
+                      <p style="width: 429.797px; height: 51.5156px; transform: translate(3px, 14px);"><b>下班回来，晚饭怎么办</b><br>下班后还要买菜煮饭，时间常常耗在最后一餐。</p>
+                      <p style="width: 429.797px; height: 42.5078px; transform: translate(3px, 12px);"><b>我们的回应</b>　便捷外带服务<br>预处理菜、净菜、减脂备饭、广式点心汤水，顺手带走，回家就能上桌。</p>
+                    </div>
+                  </div>
+                  <p class="type-note" style="transform: translate(0px, 4px);">痛点用口语，不说“利用率低”，说“有些可惜”；回应不夸大，说“我们的回应是”，不说“彻底解决”。</p>
+                </div>
+
+                <div>
+                  <div class="type-row">
+                    <aside class="type-side">
+                      <h4>类型二<br>升级前后对照型</h4>
+                      <p>适合：空间改造、混型优化、标准升级</p>
+                      <img src="design_handoff_page04/icons/icon-before-after-compare.png" alt="">
+                    </aside>
+                    <div class="type-flow">
+                      <div class="flow-stack">
+                        <div class="flow-box"><span class="flow-chip">发现的问题</span><span>现状描述，或 BEFORE 图</span></div>
+                        <div class="flow-down" aria-hidden="true"></div>
+                        <div class="flow-box"><span class="flow-chip">优化逻辑</span><span>为什么这样改比其他方式更合适</span></div>
+                        <div class="flow-down" aria-hidden="true"></div>
+                        <div class="flow-box"><b>A / B / C</b><span>三个优化动作 + AFTER 效果图</span></div>
+                      </div>
+                    </div>
+                    <div class="type-example">
+                      <span class="example-tag">BEFORE / AFTER</span>
+                      <div class="compare-images">
+                        <figure><img src="design_handoff_page04/images/image-restaurant-before.png" alt=""><figcaption>BEFORE（现状）</figcaption></figure>
+                        <img class="compare-arrow" src="design_handoff_page04/illustrations/illustration-before-after-arrow.png" alt="">
+                        <figure><img src="design_handoff_page04/images/image-restaurant-after.png" alt=""><figcaption>AFTER（优化后）</figcaption></figure>
+                      </div>
+                      <ul class="compare-points">
+                        <li>缺乏视觉引导<br>动线交叉混乱</li>
+                        <li>识别清晰，快速定位<br>动线顺畅，分流高效</li>
+                      </ul>
+                    </div>
+                  </div>
+                  <p class="type-note" style="transform: translate(0px, 4px);">用现状视角描述问题，不说“设计很差”，说“缺乏视觉引导，员工无法快速识别位置”。</p>
+                </div>
+
+                <div>
+                  <div class="type-row">
+                    <aside class="type-side">
+                      <h4>类型三<br>产品线展示型</h4>
+                      <p>适合：菜品结构、档口介绍、早餐方案</p>
+                      <img src="design_handoff_page04/icons/icon-serving-cloche.png" alt="">
+                    </aside>
+                    <div class="type-flow">
+                      <div class="flow-stack">
+                        <div class="flow-box"><span class="flow-chip">产品线名称</span><span>每日 X 款　【定位一句话】</span></div>
+                        <div class="flow-box"><span class="flow-chip">代表菜品示例</span><span>列 2-3 个，不要全部列出</span></div>
+                        <div class="dish-row">
+                          <figure><img src="design_handoff_page04/images/image-dish-stir-fry.png" alt=""><figcaption>鸡肉菌菇炒松</figcaption></figure>
+                          <figure><img src="design_handoff_page04/images/image-dish-rice-bowl.png" alt=""><figcaption>泰式鸡肉饭</figcaption></figure>
+                          <figure><img src="design_handoff_page04/images/image-dish-braised-meat.png" alt=""><figcaption>牛肉胡萝卜炖</figcaption></figure>
+                        </div>
+                        <div class="product-line-note"><b>轮换机制</b>（X 周内不重复 / X 送 X 出品）</div>
+                      </div>
+                    </div>
+                    <div class="type-example">
+                      <span class="example-tag">示例：</span>
+                      <div class="product-example-head"><b>轻食健康系列</b><span>每日 6 款 ｜ 轻负担，微营养，元气每一餐</span></div>
+                      <div class="product-example-label">代表菜品示例：</div>
+                      <div class="dish-row">
+                        <figure><img src="design_handoff_page04/images/image-dish-stir-fry.png" alt=""><figcaption>鸡肉菌菇炒松</figcaption></figure>
+                        <figure><img src="design_handoff_page04/images/image-dish-rice-bowl.png" alt=""><figcaption>泰式鸡肉饭</figcaption></figure>
+                        <figure><img src="design_handoff_page04/images/image-dish-braised-meat.png" alt=""><figcaption>牛肉胡萝卜炖</figcaption></figure>
+                      </div>
+                      <div class="product-line-note"><b>轮换机制：</b>2周内不重复，每日6款任选2款出品</div>
+                    </div>
+                  </div>
+                  <p class="type-note" style="transform: translate(0px, 4px);">不说“我们菜品很多”，说“结构固定、品类轮换，一天都能找到想要的，每天又有新鲜感”。</p>
+                </div>
+
+                <div>
+                  <div class="type-row">
+                    <aside class="type-side">
+                      <h4>类型四<br>人群分层型</h4>
+                      <p>适合：针对不同群体的差异化设计</p>
+                      <img src="design_handoff_page04/icons/icon-audience-group.png" alt="">
+                    </aside>
+                    <div class="type-flow">
+                      <span class="example-tag">【人群名称】 | 【核心诉求标签】</span>
+                      <div class="audience-lines" style="width: 478.188px; height: 95.523px; transform: translate(0px, 8px);">
+                        <div class="audience-line">专属服务点 A：【动作】 + 【说明】</div>
+                        <div class="audience-line">专属服务点 B：【动作】 + 【说明】</div>
+                        <div class="audience-line">专属服务点 C：【动作】 + 【说明】</div>
+                      </div>
+                    </div>
+                    <div class="type-example">
+                      <div class="audience-example-head">
+                        <b>示例：学生群体</b>
+                        <i aria-hidden="true"></i>
+                        <span>好吃不贵 · 快速便捷 · 营养均衡</span>
+                      </div>
+                      <ul class="audience-service-list" style="transform: translate(0px, 14px); width: 429.797px; height: 95.1953px;">
+                        <li><span>专属服务点 A：</span><span><b>高性价比套餐</b><em>大份足量，价格亲民</em></span></li>
+                        <li><span>专属服务点 B：</span><span><b>快速取餐通道</b><em>提前备餐，缩短排队时间</em></span></li>
+                        <li><span>专属服务点 C：</span><span><b>营养可视化</b><em>每日营养提示，吃得更安心</em></span></li>
+                      </ul>
+                    </div>
+                  </div>
+                  <p class="type-note" style="transform: translate(0px, 7px);">各人群的服务要有差异，不能都写成同一套，写成一样就是最大失分点。</p>
+                </div>
+              </div>
+            </section>
+
+            <section class="writing-section" aria-label="标题写法">
+              <div class="writing-title"><span class="num">4.3</span><h3>标题写法</h3></div>
+              <p class="writing-lead"><span style="font-weight: normal;">标题写“结论”，不写“话题”。</span></p>
+              <div class="title-writing-grid">
+                <div class="formula-card">
+                  <h4>两个公式</h4>
+                  <div class="formula-box" style="width: 322.898px; height: 85.7812px;"><b>公式 A</b><br>【结论 / 卖点概括】 + 冒号 + 【具体观察】<br>例：食品安全管控：三道防线，让风险止步于餐桌之前</div>
+                  <div class="formula-box" style="transform: translate(0px, 14px); width: 322.898px; height: 90.7812px;"><b>公式 B</b><br>【名词主题】 + 冒号 + 【关键词 · 关键词 · 关键词】<br>例：厨房运营升级：标准出品 · 流程提效 · 风险闭环</div>
+                </div>
+                <div class="rule-card">
+                  <h4>四条规律</h4>
+                  <div class="rule-item"><span>1</span><div>把“我们有什么”改成“你能得到什么”。不说“食品安全管控系统”，说“一餐可追溯，是日常的安心”。</div></div>
+                  <div class="rule-item" style="transform: translate(0px, 13px);"><span>2</span><div>数字要具体。不说“多维管控”，说“三道防线”；不说“餐品丰富”，说“30 天鲜时节排班”。</div></div>
+                  <div class="rule-item" style="transform: translate(0px, 26px);"><span>3</span><div>动词激活画面。止步 / 体验 / 落地 / 省心 / 感受，比名词堆砌更有力。</div></div>
+                  <div class="rule-item" style="transform: translate(0px, 37px);"><span>4</span><div>三词并列有节奏。识别、秩序、温度 / 看得见、选得清、吃得暖。</div></div>
+                </div>
+                <div class="contrast-card">
+                  <h4>对照示例</h4>
+                  <table class="contrast-table">
+                    <thead><tr><th>话题式（弱）</th><th>结论式（好）</th></tr></thead>
+                    <tbody>
+                      <tr><td>食品安全管控</td><td>三道防线，让风险止步于餐桌之前</td></tr>
+                      <tr><td>菜单管理</td><td>菜单不再周而复始，微规划驱动</td></tr>
+                      <tr><td>环境改造</td><td>不动一块砖，让食堂清爽十倍</td></tr>
+                      <tr><td>活水产品</td><td>一碗节气汤，让员工感受到被照顾</td></tr>
+                      <tr><td>项目总结</td><td>小小升级，大大改变</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </section>
+
+            <section class="writing-section" aria-label="信息密度">
+              <div class="writing-title"><span class="num">4.4</span><h3>信息密度：一页一件事</h3></div>
+              <p class="writing-lead"><span style="font-weight: normal;">每页只讲一件事，内容装不下就分两页。每个要点 2-3 句话，能用数字和图表说清楚的不用文字描述。</span></p>
+              <div class="density-grid">
+                <article class="density-item">
+                  <img src="design_handoff_page04/icons/icon-target-focus.png" alt="">
+                  <div><strong>每页只讲一件事</strong><span>内容装不下就分两页</span></div>
+                </article>
+                <article class="density-item">
+                  <img src="design_handoff_page04/icons/icon-message-dots.png" alt="">
+                  <div><strong>每个要点 2-3 句话</strong><span>短句表达，重点突出</span></div>
+                </article>
+                <article class="density-item">
+                  <img src="design_handoff_page04/icons/icon-density-clock.png" alt="">
+                  <div><strong>能用数字和图表</strong><span>说明性的不用文字描述</span></div>
+                </article>
+                <article class="density-item">
+                  <img src="design_handoff_page04/icons/icon-compact-growth.png" alt="">
+                  <div><strong>图表 &gt; 文字</strong><span>让信息更直观，记忆更深刻</span></div>
+                </article>
+              </div>
+            </section>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="language" aria-label="章节 05 语言风格">
+        <div class="canvas language-canvas" style="width: 1220px; height: 1808.88px;">
+          <header class="language-banner">
+            <div class="language-banner-copy">
+              <div class="language-banner-index">05</div>
+              <div class="language-banner-divider" aria-hidden="true"></div>
+              <div>
+                <h2>语言风格</h2>
+                <p>把机制说成感受，把承诺变成数字，把价值写进人心。</p>
+              </div>
+            </div>
+            <img class="language-hero-art" src="design_handoff_page05/illustrations/illust-header-chat-pencil.png" alt="橙色对话气泡和铅笔 3D 插画">
+          </header>
+
+          <div class="language-body">
+            <section class="language-section" aria-label="把机制说成感受">
+              <div class="language-title">
+                <span class="num">5.1</span>
+                <h3>把机制说成感受</h3>
+              </div>
+              <p class="language-lead"><span style="font-weight: normal;">每个服务机制，最终要落到人的感受上：</span></p>
+
+              <div class="feeling-compare">
+                <article class="writing-panel">
+                  <h4>机制写法（弱）</h4>
+                  <div class="writing-row"><img src="design_handoff_page05/icons/icon-soup-bowl.png" alt=""><p>每日汤水供应，按季节调整</p></div>
+                  <div class="writing-row"><img src="design_handoff_page05/icons/icon-nutrition-label.png" alt=""><p>提供营养标签展示</p></div>
+                  <div class="writing-row"><img src="design_handoff_page05/icons/icon-theme-store.png" alt=""><p>定期更换特色专区主题</p></div>
+                  <div class="writing-row"><img src="design_handoff_page05/icons/icon-supply-locker.png" alt=""><p>洗手台配备常用物品</p></div>
+                </article>
+
+                <div class="arrow-stack" aria-hidden="true">
+                  <img src="design_handoff_page05/icons/icon-arrow-orange.png" alt="">
+                  <img src="design_handoff_page05/icons/icon-arrow-orange.png" alt="">
+                  <img src="design_handoff_page05/icons/icon-arrow-orange.png" alt="">
+                  <img src="design_handoff_page05/icons/icon-arrow-orange.png" alt="">
+                </div>
+
+                <article class="writing-panel">
+                  <h4>感受写法（强）</h4>
+                  <div class="writing-row"><img src="design_handoff_page05/icons/icon-heart-care.png" alt=""><p>一碗节气汤，是厂府饮食最朴实的关怀</p></div>
+                  <div class="writing-row"><img src="design_handoff_page05/icons/icon-staff-serving.png" alt=""><p>吃多少、怎么吃，员工自己心里有数</p></div>
+                  <div class="writing-row"><img src="design_handoff_page05/icons/icon-star-topic.png" alt=""><p>每季换一次，让员工猜“下一站是哪里”</p></div>
+                  <div class="writing-row"><img src="design_handoff_page05/icons/icon-gift-need.png" alt=""><p>每一个被忽视的小需求，都提前备好在这里</p></div>
+                </article>
+              </div>
+
+              <aside class="notice-box">
+                <div class="notice-head">
+                  <img src="design_handoff_page05/icons/icon-temperature.png" alt="">
+                  <span><strong>注意边界：</strong> 情感温度要克制，不要过度煽情。</span>
+                </div>
+                <div class="check-lines">
+                  <div class="check-line"><img src="design_handoff_page05/icons/icon-check-green.png" alt=""><span>一碗好汤，是厂府饮食最朴实的关怀，也是服务细致与温度的日常体现。</span></div>
+                  <div class="check-line"><img src="design_handoff_page05/icons/icon-cross-red.png" alt=""><span>我们用心烹制每一碗汤，让员工感受到家的温暖，体会到公司对他们的深切关爱！</span></div>
+                </div>
+              </aside>
+            </section>
+
+            <section class="language-section" aria-label="让承诺变成可验证的数字">
+              <div class="language-title">
+                <span class="num">5.2</span>
+                <h3>让承诺变成可验证的数字</h3>
+              </div>
+
+              <div class="promise-matrix">
+                <div class="promise-left">
+                  <div class="promise-cell head">类型</div>
+                  <div class="promise-cell head">弱写法</div>
+
+                  <div class="promise-cell"><span class="promise-type"><img src="design_handoff_page05/icons/icon-temperature.png" alt=""><span>温度管理</span></span></div>
+                  <div class="promise-cell"><span class="promise-weak">严格控温</span></div>
+
+                  <div class="promise-cell"><span class="promise-type"><img src="design_handoff_page05/icons/icon-sample-jar.png" alt=""><span>留样标准</span></span></div>
+                  <div class="promise-cell"><span class="promise-weak">每餐留样备查</span></div>
+
+                  <div class="promise-cell"><span class="promise-type"><img src="design_handoff_page05/icons/icon-supplier-shield.png" alt=""><span>供应商管理</span></span></div>
+                  <div class="promise-cell"><span class="promise-weak">严格筛选</span></div>
+
+                  <div class="promise-cell"><span class="promise-type"><img src="design_handoff_page05/icons/icon-response-clock.png" alt=""><span>客诉响应</span></span></div>
+                  <div class="promise-cell"><span class="promise-weak">快速响应</span></div>
+
+                  <div class="promise-cell"><span class="promise-type"><img src="design_handoff_page05/icons/icon-opening-checklist.png" alt=""><span>开业保障</span></span></div>
+                  <div class="promise-cell"><span class="promise-weak">充分准备</span></div>
+                </div>
+
+                <div class="promise-arrows" aria-hidden="true">
+                  <img src="design_handoff_page05/icons/icon-arrow-orange.png" alt="">
+                  <img src="design_handoff_page05/icons/icon-arrow-orange.png" alt="">
+                  <img src="design_handoff_page05/icons/icon-arrow-orange.png" alt="">
+                  <img src="design_handoff_page05/icons/icon-arrow-orange.png" alt="">
+                  <img src="design_handoff_page05/icons/icon-arrow-orange.png" alt="">
+                </div>
+
+                <div class="promise-right">
+                  <div class="promise-strong-cell promise-strong-head">强写法</div>
+                  <div class="promise-strong-cell">冷藏 0-4℃，冷冻 ≤ -18℃，<br>每30分钟自动记录，异常15分钟内响应</div>
+                  <div class="promise-strong-cell">每餐每品种 ≥125克，<br>保存48小时以上</div>
+                  <div class="promise-strong-cell">五步准入，80分以上方可入库，<br>连续两次低于70分自动淘汰</div>
+                  <div class="promise-strong-cell">2小时内响应，24小时内给出处理方案，<br>48小时内解决（“2448”标准）</div>
+                  <div class="promise-strong-cell">336项开业检查清单逐项核销，<br>开业首周管理层驻场</div>
+                </div>
+              </div>
+
+              <aside class="density-note">
+                <img src="design_handoff_page05/icons/icon-digital-star.png" alt="">
+                <strong>数字密度控制：</strong> 一页核心数字不超过5个；数字要能让人感知。<br>
+                不说“98.6%合格率”，说“100份里不到2份不合格”。
+              </aside>
+            </section>
+
+            <section class="language-section" aria-label="三词并列制造节奏感" style="transform: translate(0px, 29px);">
+              <div class="language-title">
+                <span class="num">5.3</span>
+                <h3>三词并列，制造节奏感</h3>
+              </div>
+              <p class="language-lead"><span style="font-weight: normal;">在标题、结语、章节关键词里使用：</span></p>
+
+              <div class="tag-row">
+                <div class="tag-pill"><img src="design_handoff_page05/icons/icon-eye-visibility.png" alt=""><span>看得见 · 选得清 · 吃得暖</span></div>
+                <div class="tag-pill"><img src="design_handoff_page05/icons/icon-process-structure.png" alt=""><span>识别 · 秩序 · 温度</span></div>
+                <div class="tag-pill"><img src="design_handoff_page05/icons/icon-heart-standard.png" alt=""><span>标准出品 · 健康关怀 · 反馈闭环</span></div>
+              </div>
+
+              <p class="flow-title"><span style="font-weight: normal;">三层递进（适合章节结语和方案收尾）：</span></p>
+              <div class="outcome-flow">
+                <article class="outcome-card">
+                  <img src="design_handoff_page05/illustrations/illust-employee-care.png" alt="">
+                  <div><strong>让员工</strong><p>吃得更明白、选择更轻松、坐得更舒适。</p></div>
+                </article>
+                <img class="flow-arrow" src="design_handoff_page05/icons/icon-arrow-green.png" alt="">
+                <article class="outcome-card blue">
+                  <img src="design_handoff_page05/illustrations/illust-party-b-building.png" alt="">
+                  <div><strong>也让甲方</strong><p>管理更省心、运营更稳定、服务更可持续。</p></div>
+                </article>
+                <img class="flow-arrow" src="design_handoff_page05/icons/icon-arrow-orange.png" alt="">
+                <article class="outcome-card orange">
+                  <img src="design_handoff_page05/illustrations/illust-outcome-growth.png" alt="">
+                  <div><strong>最终实现</strong><p>员工满意度提升、甲方管理更高效、食堂价值持续放大。</p></div>
+                </article>
+              </div>
+
+              <aside class="language-quote">
+                <img class="quote-left" src="design_handoff_page05/icons/icon-quote-left.png" alt="">
+                <span>语言有温度，数字有力度，方案才有说服力。</span>
+                <img class="quote-right" src="design_handoff_page05/icons/icon-quote-right.png" alt="">
+              </aside>
+            </section>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="transition" aria-label="章节 06 过渡页与结尾">
+        <div class="canvas transition-canvas">
+          <header class="transition-banner">
+            <div class="transition-banner-copy">
+              <div class="transition-banner-index">06</div>
+              <div class="transition-banner-divider" aria-hidden="true"></div>
+              <div>
+                <h2>过渡页与结尾</h2>
+                <p>让章节更有引导力，让结尾更有说服力。</p>
+              </div>
+            </div>
+            <img class="transition-hero-art" src="handoff_work_06/illustrations/illust-header-document-pencil.png" alt="文档与铅笔 3D 插画">
+          </header>
+
+          <div class="transition-body">
+            <section class="transition-section" aria-label="章节过渡页五段式结构">
+              <div class="transition-title">
+                <span class="num">6.1</span>
+                <h3>章节过渡页：五段式结构</h3>
+              </div>
+              <p class="transition-lead">每个章节的第一页，要让客户先对本章有框架，再深入阅读。</p>
+
+              <div class="chapter-flow-grid">
+                <article class="chapter-card">
+                  <div class="chapter-item">
+                    <img src="handoff_work_06/icons/icon-title-target.png" alt="">
+                    <div><strong>大标题</strong><p>一句话说清本章本质（不超过20字）</p></div>
+                  </div>
+                  <div class="chapter-item">
+                    <img src="handoff_work_06/icons/icon-keyword-tag.png" alt="">
+                    <div><strong>关键词</strong><p>3个词提炼核心维度，用 · 分隔</p></div>
+                  </div>
+                  <div class="chapter-item">
+                    <img src="handoff_work_06/icons/icon-chapter-speech.png" alt="">
+                    <div><strong>章节导言</strong><p>1-3段，解释“为什么这个章节这样设计”</p></div>
+                  </div>
+                  <div class="chapter-item">
+                    <img src="handoff_work_06/icons/icon-core-summary-badge.png" alt="">
+                    <div><strong>3条核心结论</strong><p>用 01/02/03 格式提前给出本章的答案</p></div>
+                  </div>
+                  <div class="chapter-item">
+                    <img src="handoff_work_06/icons/icon-ending-paper-plane.png" alt="">
+                    <div><strong>尾句</strong><p>“接下来：板块A → 板块B → 板块C”</p></div>
+                  </div>
+                </article>
+
+                <img class="center-arrow" src="handoff_work_06/icons/icon-arrow-orange.png" alt="">
+
+                <article class="example-card">
+                  <div class="example-badge">示例：出品结构设计</div>
+                  <div class="example-step">
+                    <img src="handoff_work_06/icons/icon-step-01.png" alt="">
+                    <span>从“吃什么”到“怎么选”，把出品做成可理解、可期待、可持续的用餐体验。</span>
+                  </div>
+                  <div class="example-step">
+                    <img src="handoff_work_06/icons/icon-step-02.png" alt="">
+                    <span><strong>结构 / 选择 / 稳定</strong></span>
+                  </div>
+                  <div class="example-step">
+                    <img src="handoff_work_06/icons/icon-step-03.png" alt="">
+                    <span>出品逻辑的升级，重点是把菜品结构、供应节奏和区域风味组织清楚，让员工更容易判断，也更容易产生期待。</span>
+                  </div>
+                  <div class="example-step">
+                    <img src="handoff_work_06/icons/icon-step-04.png" alt="">
+                    <span><strong>01 有结构</strong>　早餐快取、午餐自选、特色专区、下午茶形成清晰产品线。<br><strong>02 有选择</strong>　每类产品保留稳定款，通过菜池轮换提供新鲜感。<br><strong>03 有稳定</strong>　主荤、副荤、时蔬、汤水各司其职，形成可持续的日常出品。</span>
+                  </div>
+                  <div class="example-step">
+                    <img src="handoff_work_06/icons/icon-step-05.png" alt="">
+                    <span><strong>接下来：</strong>产品线总览 → 早餐快取线 → 午餐档口 → 下午茶产品</span>
+                  </div>
+                </article>
+              </div>
+            </section>
+
+            <section class="transition-section" aria-label="结尾三层结构">
+              <div class="transition-title">
+                <span class="num">6.2</span>
+                <h3>结尾：三层结构</h3>
+              </div>
+              <p class="transition-lead">结尾不是“感谢观看”，而是让客户觉得“选你是合作，不是采购”。</p>
+
+              <div class="ending-layers">
+                <div class="ending-layer">
+                  <div class="ending-layer-label"><img src="handoff_work_06/icons/icon-layer-summary-person.png" alt=""><span>第一层（总结）</span></div>
+                  <div class="ending-layer-copy">每一项改变都不大，但加在一起，<br>是【员工视角的具体体验变化】。</div>
+                </div>
+                <div class="ending-layer">
+                  <div class="ending-layer-label"><img src="handoff_work_06/icons/icon-layer-party-building.png" alt=""><span>第二层（甲方价值）</span></div>
+                  <div class="ending-layer-copy">吃得更明白、选得更轻松、坐得更舒适；<br>也让甲方管理更省心、运营更稳定、服务更可持续。</div>
+                </div>
+                <div class="ending-layer">
+                  <div class="ending-layer-label"><img src="handoff_work_06/icons/icon-layer-vision-handshake.png" alt=""><span>第三层（共同愿景）</span></div>
+                  <div class="ending-layer-copy">期待与【甲方名称】共同打造<br>更放心、更舒适、更有温度的【场景】服务样本。</div>
+                </div>
+              </div>
+            </section>
+
+            <section class="transition-section" aria-label="升级对照表">
+              <div class="transition-title">
+                <span class="num">6.3</span>
+                <h3>升级对照表（总结页标配）</h3>
+              </div>
+              <p class="transition-lead">让甲方一眼看到整体变化：</p>
+
+              <table class="upgrade-table">
+                <thead>
+                  <tr>
+                    <th>编号</th>
+                    <th>升级维度</th>
+                    <th>升级前（1-3字）</th>
+                    <th>升级后（一句话，关键词加粗）</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="icon-cell"><img src="handoff_work_06/icons/icon-upgrade-entry-door.png" alt=""></td>
+                    <td>入口升级</td>
+                    <td>普通通行入口</td>
+                    <td class="upgrade-copy"><span class="arrow-mark">→</span>信息清晰、识别统一、服务在场的餐厅第一界面</td>
+                  </tr>
+                  <tr>
+                    <td class="icon-cell"><img src="handoff_work_06/icons/icon-upgrade-menu-clipboard.png" alt=""></td>
+                    <td>菜单升级</td>
+                    <td>单一菜名展示</td>
+                    <td class="upgrade-copy"><span class="arrow-mark">→</span>含口味、健康属性、营养信息和推荐提示的选择工具</td>
+                  </tr>
+                  <tr>
+                    <td class="icon-cell"><img src="handoff_work_06/icons/icon-upgrade-schedule-board.png" alt=""></td>
+                    <td>菜单升级</td>
+                    <td>日常排菜</td>
+                    <td class="upgrade-copy"><span class="arrow-mark">→</span>有计划、有轮换、有特色、有复盘的出品运营机制</td>
+                  </tr>
+                  <tr>
+                    <td class="icon-cell"><img src="handoff_work_06/icons/icon-upgrade-operations-gear.png" alt=""></td>
+                    <td>运营机制升级</td>
+                    <td>被动响应管理</td>
+                    <td class="upgrade-copy"><span class="arrow-mark">→</span>数据驱动、标准落地、持续优化的运营管理体系</td>
+                  </tr>
+                  <tr>
+                    <td class="icon-cell"><img src="handoff_work_06/icons/icon-upgrade-service-heart.png" alt=""></td>
+                    <td>用餐体验升级</td>
+                    <td>功能满足为主</td>
+                    <td class="upgrade-copy"><span class="arrow-mark">→</span>看得见、选得清、吃得暖的日常用餐体验</td>
+                  </tr>
+                </tbody>
+              </table>
+            </section>
+
+            <section class="transition-section" aria-label="结尾要留开口">
+              <div class="transition-title">
+                <span class="num">6.4</span>
+                <h3>结尾要留开口</h3>
+              </div>
+              <div class="closing-callout">
+                <img src="handoff_work_06/illustrations/illust-closing-chat-bubble.png" alt="">
+                <div>
+                  <h4>如果您有我们没想到的地方，今天是最好的时机聊。</h4>
+                  <p>让甲方感到被尊重，同时把对话引进来，而不是让他拿着方案回去自己想。</p>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="layout" aria-label="章节 07 排版规则">
+        <div class="canvas layout-canvas">
+          <header class="layout-banner">
+            <div class="layout-banner-copy" style="">
+              <div class="layout-banner-index">07</div>
+              <div class="layout-banner-divider" aria-hidden="true"></div>
+              <div>
+                <h2>排版规则</h2>
+                <p>排版的目的不是“让PPT好看”，<br>是让客户更快、更省力地理解<br>你想说的东西。</p>
+              </div>
+            </div>
+            <img class="layout-hero-art" src="design_handoff_page07/illustrations/illustration-layout-board.png" alt="排版画板 3D 插画">
+          </header>
+
+          <div class="layout-body">
+            <section class="layout-rule" aria-label="主题色不超过三种">
+              <div class="layout-no">01</div>
+              <div class="layout-copy">
+                <h3>主题色不超过三种</h3>
+                <div class="layout-point">
+                  <span class="layout-point-badge">要点</span>
+                  <p>主色 + 强调色 + 背景色。<br>中膳用：橙色（强调）+ 白灰（背景）+ 黑色（文字）</p>
+                </div>
+              </div>
+              <div class="layout-visual layout-swatches">
+                <div class="layout-swatch"><i class="orange"></i><span>强调色</span></div>
+                <div class="layout-swatch"><i class="gray"></i><span>背景色</span></div>
+                <div class="layout-swatch"><i class="black"></i><span>文字色</span></div>
+              </div>
+            </section>
+
+            <section class="layout-rule" aria-label="字体有层次">
+              <div class="layout-no">02</div>
+              <div class="layout-copy">
+                <h3>字体有层次</h3>
+                <div class="layout-point">
+                  <span class="layout-point-badge">要点</span>
+                  <p>大字：标题 / 中字：小标题 / 小字：说明文字。<br>不要所有字一样大</p>
+                </div>
+              </div>
+              <div class="layout-visual layout-type-demo">
+                <div class="layout-type-line"><strong>标题内容</strong><span></span><em>（大字）</em></div>
+                <div class="layout-type-line medium"><strong>小标题内容</strong><span></span><em>（中字）</em></div>
+                <div class="layout-type-line small"><strong>说明文字内容说明文字内容说明文字内容。</strong><span></span><em>（小字）</em></div>
+              </div>
+            </section>
+
+            <section class="layout-rule" aria-label="留白不是浪费">
+              <div class="layout-no">03</div>
+              <div class="layout-copy">
+                <h3>留白不是浪费</h3>
+                <div class="layout-point">
+                  <span class="layout-point-badge">要点</span>
+                  <p>空间太满，客户看着压抑。<br>少放内容，每个内容都清楚，比全塞进去强</p>
+                </div>
+              </div>
+              <div class="layout-visual layout-compare">
+                <div class="layout-mini-card">
+                  <span class="status"><b>×</b>太满</span>
+                  <img src="design_handoff_page07/images/image-overcrowded-layout.png" alt="内容过满示意">
+                </div>
+                <img class="layout-arrow" src="design_handoff_page07/illustrations/illustration-right-arrow.png" alt="">
+                <div class="layout-mini-card good">
+                  <span class="status"><b>✓</b>留白合理</span>
+                  <img src="design_handoff_page07/images/image-whitespace-layout.png" alt="留白合理示意">
+                </div>
+              </div>
+            </section>
+
+            <section class="layout-rule" aria-label="图片用场景图">
+              <div class="layout-no">04</div>
+              <div class="layout-copy">
+                <h3>图片用场景图</h3>
+                <div class="layout-point">
+                  <span class="layout-point-badge">要点</span>
+                  <p>用场景图 / 出品图让甲方更有带入感，效果图要注明“示意图”</p>
+                </div>
+              </div>
+              <div class="layout-visual layout-photo-pair">
+                <div class="layout-mini-card">
+                  <img src="design_handoff_page07/images/image-restaurant-scene.png" alt="餐厅场景图">
+                  <span>场景图（更有代入感）</span>
+                </div>
+                <div class="layout-mini-card">
+                  <img src="design_handoff_page07/images/image-plated-steak.png" alt="出品效果图">
+                  <span>出品图 / 效果图（示意图）</span>
+                </div>
+              </div>
+            </section>
+
+            <section class="layout-rule" aria-label="内容要对齐">
+              <div class="layout-no">05</div>
+              <div class="layout-copy">
+                <h3>内容要对齐</h3>
+                <div class="layout-point">
+                  <span class="layout-point-badge">要点</span>
+                  <p>同行、同列的元素必须对齐。<br>乱放显得不认真</p>
+                </div>
+              </div>
+              <div class="layout-visual layout-compare">
+                <div class="layout-mini-card">
+                  <span class="status"><b>×</b>未对齐</span>
+                  <img src="design_handoff_page07/images/image-misaligned-rows.png" alt="未对齐示意">
+                </div>
+                <img class="layout-arrow" src="design_handoff_page07/illustrations/illustration-right-arrow.png" alt="">
+                <div class="layout-mini-card good">
+                  <span class="status"><b>✓</b>对齐规范</span>
+                  <img src="design_handoff_page07/images/image-aligned-rows.png" alt="对齐规范示意">
+                </div>
+              </div>
+            </section>
+
+            <aside class="layout-footer">
+              <img src="design_handoff_page07/illustrations/illustration-lightbulb.png" alt="">
+              <strong>排版的目标，不是堆满内容，而是让重点被一眼看懂。</strong>
+              <img src="design_handoff_page07/illustrations/illustration-checklist-pencil.png" alt="">
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="team" aria-label="章节 08 团队介绍怎么写">
+        <div class="canvas team-canvas">
+          <header class="team-banner">
+            <div class="team-banner-copy">
+              <div class="team-banner-index">08</div>
+              <div class="team-banner-divider" aria-hidden="true"></div>
+              <div>
+                <h2>团队介绍怎么写</h2>
+                <p>先让方案说服甲方，再用团队背书，<br>把团队放在正确的位置。</p>
+              </div>
+            </div>
+            <img class="team-hero-art" src="design_handoff_page08/illustrations/illustration-team-handshake-cards.png" alt="团队握手 3D 插画">
+          </header>
+
+          <div class="team-body">
+            <section class="team-section" aria-label="位置放在倒数第 2 到 3 页">
+              <h2 class="team-title"><strong>8.1</strong><span>位置：放在倒数第2-3页</span></h2>
+              <div class="team-intro-grid">
+                <div class="team-intro-copy">先让方案说服甲方，<br>再用团队背书。<br>放在开头是失分动作。</div>
+
+                <div class="team-order-card">
+                  <h3 class="team-order-heading"><img src="design_handoff_page08/icons/icon-status-x-circle.png" alt="">放在开头</h3>
+                  <div class="team-flow" aria-label="错误顺序">
+                    <span>封面</span><img src="design_handoff_page08/icons/icon-flow-arrow-right.png" alt=""><span>方案内容</span><img src="design_handoff_page08/icons/icon-flow-arrow-right.png" alt=""><span class="active">团队介绍</span>
+                  </div>
+                  <p>容易被忽略，逻辑顺序错误</p>
+                </div>
+
+                <div class="team-order-card good">
+                  <h3 class="team-order-heading"><img src="design_handoff_page08/icons/icon-status-check-circle.png" alt="">放在方案倒数第2-3页</h3>
+                  <div class="team-flow" aria-label="正确顺序">
+                    <span>封面</span><img src="design_handoff_page08/icons/icon-flow-arrow-right.png" alt=""><span>方案内容</span><img src="design_handoff_page08/icons/icon-flow-arrow-right.png" alt=""><span class="active">团队介绍</span><img src="design_handoff_page08/icons/icon-flow-arrow-right.png" alt=""><span>附录</span>
+                  </div>
+                  <p>顺序正确，团队介绍才会成为加分项。</p>
+                </div>
+              </div>
+            </section>
+
+            <section class="team-section team-diagram-section" aria-label="整体定位黄金三角写法">
+              <h2 class="team-title"><strong>8.2</strong><span>整体定位：黄金三角写法</span></h2>
+              <p class="team-lead">团队形成“<mark>【优势A（代表人）】</mark>、<mark>【优势B（代表人）】</mark>、<mark>【优势C（代表人）】</mark>”的黄金三角组合，<br>以 <mark>【X】</mark> 为基、<mark>【Y】</mark> 为标、<mark>【Z】</mark> 为力，致力打造 <mark>【项目定位】</mark>。</p>
+              <div class="team-triangle-wrap">
+                <img class="team-triangle-art" src="design_handoff_page08/illustrations/illustration-team-triangle-avatars.png" alt="团队黄金三角人物关系图">
+                <span class="team-triangle-label a">优势A（代表人）</span>
+                <span class="team-triangle-label b">优势B（代表人）</span>
+                <span class="team-triangle-label c">优势C（代表人）</span>
+                <span class="team-triangle-core">以【X】为基<br>以【Y】为标<br>以【Z】为力</span>
+                <span class="team-triangle-result">致力打造【项目定位】</span>
+              </div>
+            </section>
+
+            <section class="team-section" aria-label="个人简介公式">
+              <h2 class="team-title"><strong>8.3</strong><span>个人简介公式</span></h2>
+              <div class="team-profile-grid">
+                <div class="team-profile-copy">
+                  <mark>【背景】</mark>，<br>
+                  <mark>【X】</mark> 年 <mark>【细分领域】</mark> 经验，<mark>【Y】</mark> 年深耕 <mark>【高端履历】</mark>，<br>
+                  懂 <mark>【技能A】</mark> 与 <mark>【技能B】</mark>，更善将 <mark>【特长】</mark> 与 <mark>【专业】</mark> 结合，<br>
+                  主导 <mark>【具体成果】</mark>，契合 <mark>【当前项目定位】</mark>。
+                </div>
+                <img class="team-profile-card" src="design_handoff_page08/illustrations/illustration-profile-card.png" alt="个人简介资料卡">
+              </div>
+            </section>
+
+            <section class="team-section" aria-label="三个关键句式">
+              <h2 class="team-title"><strong>8.4</strong><span>三个关键句式</span></h2>
+              <div class="team-keywords">
+                <div class="team-keyword-card">
+                  <img src="design_handoff_page08/icons/icon-link-chain.png" alt="">
+                  <p><strong>“更善将……结合”</strong>→ 展示跨界能力</p>
+                </div>
+                <div class="team-keyword-card">
+                  <img src="design_handoff_page08/icons/icon-target-bullseye.png" alt="">
+                  <p><strong>“主导【具体成果】”</strong>→ 替代“曾负责过”，有结果感</p>
+                </div>
+                <div class="team-keyword-card">
+                  <img src="design_handoff_page08/icons/icon-puzzle-piece.png" alt="">
+                  <p><strong>“契合【定位】”</strong>→ 把个人经历连接到甲方项目</p>
+                </div>
+              </div>
+            </section>
+
+            <aside class="team-quote">
+              <img src="design_handoff_page08/icons/icon-quote-open.png" alt="">
+              <span>团队介绍不是“报简历”，而是让甲方相信：这支团队，能把这件事做好。</span>
+              <img src="design_handoff_page08/icons/icon-quote-close.png" alt="">
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="taboo" aria-label="章节 09 写作禁忌">
+        <div class="canvas taboo-canvas">
+          <header class="taboo-banner">
+            <div class="taboo-banner-copy">
+              <div class="taboo-banner-index">09</div>
+              <div class="taboo-banner-divider" aria-hidden="true"></div>
+              <div>
+                <h2>写作禁忌</h2>
+                <p>避开这些坑，方案更有说服力，更容易被认可。</p>
+              </div>
+            </div>
+            <img class="taboo-hero-art" src="design_handoff/illustrations/illustration-taboo-document-x.png" alt="写作禁忌文档 3D 插画">
+          </header>
+
+          <div class="taboo-body">
+            <section class="taboo-panel" aria-label="写作禁忌对照表">
+              <div class="taboo-table">
+                <div class="taboo-row taboo-head">
+                  <div class="taboo-cell"><img src="assets/guide2026/page09-icons/clean-icon-status-alert-circle.png" alt=""><span>禁忌</span></div>
+                  <div class="taboo-cell"><img src="assets/guide2026/page09-icons/clean-icon-status-sad-face.png" alt=""><span>后果</span></div>
+                  <div class="taboo-cell"><img src="assets/guide2026/page09-icons/clean-icon-status-check-circle.png" alt=""><span>替代做法</span></div>
+                </div>
+
+                <div class="taboo-row">
+                  <div class="taboo-cell taboo-bad"><img src="assets/guide2026/page09-icons/clean-icon-status-x-circle.png" alt=""><span>还没了解客户就动笔</span></div>
+                  <div class="taboo-cell"><span>方案全是通用内容，甲方感觉不被理解</span></div>
+                  <div class="taboo-cell taboo-fix"><img src="assets/guide2026/page09-icons/clean-icon-action-chat.png" alt=""><span>先访谈或现场看，再写</span></div>
+                </div>
+                <div class="taboo-row">
+                  <div class="taboo-cell taboo-bad"><img src="assets/guide2026/page09-icons/clean-icon-status-x-circle.png" alt=""><span>开头直接介绍公司</span></div>
+                  <div class="taboo-cell"><span>甲方还没放心，不想听</span></div>
+                  <div class="taboo-cell taboo-fix"><img src="assets/guide2026/page09-icons/clean-icon-action-person.png" alt=""><span>前言先说明甲方的三个顾虑，再说我们</span></div>
+                </div>
+                <div class="taboo-row">
+                  <div class="taboo-cell taboo-bad"><img src="assets/guide2026/page09-icons/clean-icon-status-x-circle.png" alt=""><span>只说结论，不说怎么做到</span></div>
+                  <div class="taboo-cell"><span>“我们会保障食安”——凭什么信你？</span></div>
+                  <div class="taboo-cell taboo-fix"><img src="assets/guide2026/page09-icons/clean-icon-action-list.png" alt=""><span>每写一个承诺，跟一个具体机制</span></div>
+                </div>
+                <div class="taboo-row">
+                  <div class="taboo-cell taboo-bad"><img src="assets/guide2026/page09-icons/clean-icon-status-x-circle.png" alt=""><span>用“我们承诺……”</span></div>
+                  <div class="taboo-cell"><span>承诺没有约束力</span></div>
+                  <div class="taboo-cell taboo-fix"><img src="assets/guide2026/page09-icons/clean-icon-action-shield-x.png" alt=""><span>改成“我们建立了……机制”</span></div>
+                </div>
+                <div class="taboo-row">
+                  <div class="taboo-cell taboo-bad"><img src="assets/guide2026/page09-icons/clean-icon-status-x-circle.png" alt=""><span>内容太多太密</span></div>
+                  <div class="taboo-cell"><span>重点消失，甲方看不下去</span></div>
+                  <div class="taboo-cell taboo-fix"><img src="assets/guide2026/page09-icons/clean-icon-action-document.png" alt=""><span>一页一件事，装不下就分页</span></div>
+                </div>
+                <div class="taboo-row">
+                  <div class="taboo-cell taboo-bad"><img src="assets/guide2026/page09-icons/clean-icon-status-x-circle.png" alt=""><span>堆砌菜名列表</span></div>
+                  <div class="taboo-cell"><span>感觉乱，不感觉丰富</span></div>
+                  <div class="taboo-cell taboo-fix"><img src="assets/guide2026/page09-icons/clean-icon-action-bowl.png" alt=""><span>先说结构，再举 2-3 个代表例子</span></div>
+                </div>
+                <div class="taboo-row">
+                  <div class="taboo-cell taboo-bad"><img src="assets/guide2026/page09-icons/clean-icon-status-x-circle.png" alt=""><span>团队介绍放在开头</span></div>
+                  <div class="taboo-cell"><span>甲方还没被说服，不关心你是谁</span></div>
+                  <div class="taboo-cell taboo-fix"><img src="assets/guide2026/page09-icons/clean-icon-action-group.png" alt=""><span>放在倒数第 2-3 页</span></div>
+                </div>
+                <div class="taboo-row">
+                  <div class="taboo-cell taboo-bad"><img src="assets/guide2026/page09-icons/clean-icon-status-x-circle.png" alt=""><span>给机关客户用高知语言</span></div>
+                  <div class="taboo-cell"><span>“认知聚焦”“灵感实验室”<br>在政府食堂很违和</span></div>
+                  <div class="taboo-cell taboo-fix"><img src="assets/guide2026/page09-icons/clean-icon-action-chat.png" alt=""><span>机关用接地气语言，高校才用现代化概念</span></div>
+                </div>
+                <div class="taboo-row">
+                  <div class="taboo-cell taboo-bad"><img src="assets/guide2026/page09-icons/clean-icon-status-x-circle.png" alt=""><span>同类人群写成一套服务</span></div>
+                  <div class="taboo-cell"><span>最大失分点，显示你没真正研究这个项目</span></div>
+                  <div class="taboo-cell taboo-fix"><img src="assets/guide2026/page09-icons/clean-icon-action-star.png" alt=""><span>每类人群有专属服务入口和差异化内容</span></div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="template" aria-label="章节 10 常用语言模板">
+        <div class="canvas template-canvas">
+          <header class="template-banner">
+            <div class="template-banner-copy">
+              <div class="template-banner-index">10</div>
+              <div class="template-banner-divider" aria-hidden="true"></div>
+              <div>
+                <h2>常用语言模板</h2>
+                <p>写方案卡壳，直接调用以下句式改写，快速表达核心观点。</p>
+              </div>
+            </div>
+            <img class="template-hero-art" src="design_handoff_page10/illustrations/illustration-quote-pencil.png" alt="引号与铅笔 3D 插画">
+          </header>
+
+          <div class="template-body">
+            <section class="template-module" aria-label="说我们懂这个项目">
+              <div class="template-main">
+                <div class="template-left">
+                  <div class="template-no">01</div>
+                  <div class="template-icon-ring"><img src="design_handoff_page10/icons/icon-template-user-heart.png" alt=""></div>
+                </div>
+                <div class="template-copy">
+                  <h3>说“我们懂这个项目”</h3>
+                  <p><span style="font-weight: normal;">从 <mark>【项目特征】</mark> 出发，我们认为规划重点应从<br>“<mark>【旧定位】</mark>”走向“<mark>【新定位】</mark>”——<br>让 <mark>【受益方1】</mark>，让 <mark>【受益方2】</mark>。</span></p>
+                </div>
+              </div>
+
+              <aside class="template-example">
+                <div class="template-example-title">示例：政府机关</div>
+                <p>从机关食堂的属性和干部职工的就餐节奏出发，<br>我们认为规划重点应从“基础供餐保障”<br>走向“更有温度的就餐体验”——<br>让<mark>干部职工吃得放心、选得清楚、坐得舒适</mark>；<br>也让<mark>甲方管得省心、服务持续改善</mark>。</p>
+              </aside>
+            </section>
+
+            <section class="template-module" aria-label="说这项服务不只是吃饭">
+              <div class="template-main">
+                <div class="template-left">
+                  <div class="template-no">02</div>
+                  <div class="template-icon-ring"><img src="design_handoff_page10/icons/icon-template-steaming-bowl.png" alt=""></div>
+                </div>
+                <div class="template-copy">
+                  <h3>说“这项服务不只是吃饭”</h3>
+                  <p><span style="font-weight: normal;"><mark>【服务名称】</mark>不是<mark>【表面功能】</mark>——<br>是让食堂成为一个有 <mark>【情感价值1】</mark>、<br>有 <mark>【情感价值2】</mark>、有 <mark>【情感价值3】</mark> 的地方。</span></p>
+                </div>
+              </div>
+
+              <aside class="template-example">
+                <div class="template-example-title">示例：四方食记</div>
+                <p>四方食记不只是换个菜——<br>是让食堂成为一个有<mark>记忆、有话题、<br>有期待</mark>的地方。</p>
+              </aside>
+            </section>
+
+            <section class="template-module" aria-label="说甲方可以放心">
+              <div class="template-main">
+                <div class="template-left">
+                  <div class="template-no">03</div>
+                  <div class="template-icon-ring"><img src="design_handoff_page10/icons/icon-template-shield-check.png" alt=""></div>
+                </div>
+                <div class="template-copy">
+                  <h3>说“甲方可以放心”</h3>
+                  <p><span style="font-weight: normal;">减少 <mark>【痛点行为】</mark>，让甲方的每一次 <mark>【动作】</mark><br>都 <mark>【保障1】</mark>、<mark>【保障2】</mark>；<br>每一次沟通都 <mark>【保障3】</mark>、<mark>【保障4】</mark>。</span></p>
+                </div>
+              </div>
+
+              <aside class="template-example">
+                <div class="template-example-title">示例：管理放心</div>
+                <p>减少反复沟通与临时协调，让甲方的每一次过问<br>都有<mark>据可查、有人负责</mark>；<br>每一次沟通都<mark>正式留档、权责清晰</mark>。</p>
+              </aside>
+            </section>
+
+            <aside class="template-advice">
+              <img src="design_handoff_page10/icons/icon-advice-lightbulb.png" alt="">
+              <span><strong>使用建议：</strong> 理解句式逻辑，根据真实场景替换【 】内容，表达更自然、更贴合项目。</span>
+            </aside>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="checklist" aria-label="章节 11 方案自检清单">
+        <div class="canvas checklist-canvas">
+          <header class="checklist-banner">
+            <div class="checklist-banner-copy">
+              <div class="checklist-banner-index">11</div>
+              <div class="checklist-banner-divider" aria-hidden="true"></div>
+              <div>
+                <h2>方案自检清单</h2>
+                <p>提交前逐项过一遍，确保方案不是“写完了”，<br>而是真的“写对了”。</p>
+              </div>
+            </div>
+            <img class="checklist-hero-art" src="design_handoff_v2/illustrations/illust-checklist-magnifier.png" alt="清单与放大镜 3D 插画">
+          </header>
+
+          <div class="checklist-body">
+            <section class="check-card" aria-label="客户理解">
+              <div>
+                <div class="check-card-head">
+                  <img src="design_handoff_page11/icons/badge-section-a.png" alt="">
+                  <h3 class="check-card-title">客户理解</h3>
+                </div>
+                <div class="check-items">
+                  <div class="check-item"><img src="design_handoff_page11/icons/checkbox-orange.png" alt=""><span>确认客户类型，并识别其具体子类型特征（不只是“高校”，还要知道是什么样的学院）</span></div>
+                  <div class="check-item"><img src="design_handoff_page11/icons/checkbox-orange.png" alt=""><span>了解关键决策人是谁、他最头疼的是什么</span></div>
+                  <div class="check-item"><img src="design_handoff_page11/icons/checkbox-orange.png" alt=""><span>找出我们针对这个项目真正不同的3个差异点</span></div>
+                </div>
+              </div>
+              <div class="check-card-visual"><img src="design_handoff_v2/illustrations/illust-customer-duo.png" alt=""></div>
+            </section>
+
+            <section class="check-card blue" aria-label="方案结构">
+              <div>
+                <div class="check-card-head">
+                  <img src="design_handoff_page11/icons/badge-section-b.png" alt="">
+                  <h3 class="check-card-title">方案结构</h3>
+                </div>
+                <div class="check-items">
+                  <div class="check-item"><img src="design_handoff_page11/icons/checkbox-blue.png" alt=""><span>前言有没有说出甲方的顾虑，而不是直接介绍公司</span></div>
+                  <div class="check-item"><img src="design_handoff_page11/icons/checkbox-blue.png" alt=""><span>有没有一句核心判断（“我们认为这个项目的重点是……”）</span></div>
+                  <div class="check-item"><img src="design_handoff_page11/icons/checkbox-blue.png" alt=""><span>章节顺序是否遵循“先放心→再心动→再看细节”</span></div>
+                  <div class="check-item"><img src="design_handoff_page11/icons/checkbox-blue.png" alt=""><span>每个章节是否有五段式过渡页</span></div>
+                </div>
+              </div>
+              <div class="check-card-visual"><img src="design_handoff_v2/illustrations/illust-org-chart.png" alt=""></div>
+            </section>
+
+            <section class="check-card green" aria-label="内容质量">
+              <div>
+                <div class="check-card-head">
+                  <img src="design_handoff_page11/icons/badge-section-c.png" alt="">
+                  <h3 class="check-card-title">内容质量</h3>
+                </div>
+                <div class="check-items">
+                  <div class="check-item"><img src="design_handoff_page11/icons/checkbox-green.png" alt=""><span>每一个承诺，有没有对应的具体机制（不是只说结论）</span></div>
+                  <div class="check-item"><img src="design_handoff_page11/icons/checkbox-green.png" alt=""><span>标题是结论式还是话题式（结论式才对）</span></div>
+                  <div class="check-item"><img src="design_handoff_page11/icons/checkbox-green.png" alt=""><span>有没有用真实数据或案例背书（避免空话）</span></div>
+                  <div class="check-item"><img src="design_handoff_page11/icons/checkbox-green.png" alt=""><span>语言风格：机制是否转化成感受？承诺是否落到可验证的数字？</span></div>
+                </div>
+              </div>
+              <div class="check-card-visual"><img src="design_handoff_v2/illustrations/illust-quality-shield.png" alt=""></div>
+            </section>
+
+            <section class="check-card yellow" aria-label="排版呈现">
+              <div>
+                <div class="check-card-head">
+                  <img src="design_handoff_page11/icons/badge-section-d.png" alt="">
+                  <h3 class="check-card-title">排版呈现</h3>
+                </div>
+                <div class="check-items">
+                  <div class="check-item"><img src="design_handoff_page11/icons/checkbox-yellow.png" alt=""><span>主题色不超过三种，字体有层次</span></div>
+                  <div class="check-item"><img src="design_handoff_page11/icons/checkbox-yellow.png" alt=""><span>图片是否为真实出品（或明确注明示意图）</span></div>
+                  <div class="check-item"><img src="design_handoff_page11/icons/checkbox-yellow.png" alt=""><span>一页只讲一件事</span></div>
+                </div>
+              </div>
+              <div class="check-card-visual"><img src="design_handoff_v2/illustrations/illust-layout-panel.png" alt=""></div>
+            </section>
+
+            <section class="check-card red" aria-label="收尾">
+              <div>
+                <div class="check-card-head">
+                  <img src="design_handoff_page11/icons/badge-section-e.png" alt="">
+                  <h3 class="check-card-title">收尾</h3>
+                </div>
+                <div class="check-items">
+                  <div class="check-item"><img src="design_handoff_page11/icons/checkbox-red.png" alt=""><span>总结页有升级对照表</span></div>
+                  <div class="check-item"><img src="design_handoff_page11/icons/checkbox-red.png" alt=""><span>结尾用“共同打造”，而不是“我们为您提供”</span></div>
+                  <div class="check-item"><img src="design_handoff_page11/icons/checkbox-red.png" alt=""><span>团队介绍放在倒数位置，而不是开头</span></div>
+                  <div class="check-item"><img src="design_handoff_page11/icons/checkbox-red.png" alt=""><span>有没有在结尾留开口，邀请甲方当场提意见</span></div>
+                </div>
+              </div>
+              <div class="check-card-visual"><img src="design_handoff_v2/illustrations/illust-handshake-chat.png" alt=""></div>
+            </section>
+
+            <aside class="check-footer">
+              <img src="design_handoff_page10/icons/icon-advice-lightbulb.png" alt="">
+              <strong>检查的目的，不是挑错，而是让方案更接近客户决策。</strong>
+              <img src="design_handoff_v2/illustrations/illust-checklist-pen-leaves.png" alt="" style="transform: translate(-71px, -1px);">
+            </aside>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const pages = {
+      home: { pageNo: "00", navText: "首页封面" },
+      essence: { pageNo: "01", navText: "一、方案的本质" },
+      customer: { pageNo: "02", navText: "二、动笔之前：搞清楚客户" },
+      structure: { pageNo: "03", navText: "三、整体结构：三道门理论" },
+      writing: { pageNo: "04", navText: "四、每一页怎么写" },
+      language: { pageNo: "05", navText: "五、语言风格" },
+      transition: { pageNo: "06", navText: "六、过渡页与结尾" },
+      layout: { pageNo: "07", navText: "七、排版规则" },
+      team: { pageNo: "08", navText: "八、团队介绍" },
+      taboo: { pageNo: "09", navText: "九、写作禁忌" },
+      template: { pageNo: "10", navText: "十、常用语言模板" },
+      checklist: { pageNo: "11", navText: "十一、方案自检清单" }
+    };
+
+    function setActivePage(pageId) {
+      if (!pages[pageId]) return;
+      document.querySelectorAll(".page").forEach((page) => {
+        page.classList.toggle("active", page.id === pageId);
+      });
+      document.querySelectorAll(".nav-item").forEach((item) => {
+        item.classList.toggle("active", item.dataset.page === pageId);
+      });
+      document.getElementById("pageNo").textContent = pages[pageId].pageNo;
+      document.title = `${pages[pageId].navText} · 方案撰写指南 2026`;
+      history.replaceState(null, "", `#${pageId}`);
+      window.scrollTo(0, 0);
+      requestAnimationFrame(() => window.scrollTo(0, 0));
+    }
+
+    document.querySelectorAll(".nav-item[data-page]").forEach((item) => {
+      item.addEventListener("click", () => setActivePage(item.dataset.page));
+    });
+
+    window.addEventListener("hashchange", () => {
+      const pageId = location.hash.replace("#", "");
+      if (pages[pageId]) setActivePage(pageId);
+    });
+
+    const initial = location.hash.replace("#", "") || "writing";
+    if (pages[initial]) setActivePage(initial);
+  </script>
+
+
+
+
+
+
+
+
+
+
+</body></html>
